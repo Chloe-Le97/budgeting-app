@@ -59,6 +59,8 @@ const tokenExtractor = (req, res, next) => {
 	if(asset.userId === user.id){
 		await asset.destroy()
 		res.status(204).end()
+	} else {
+		return res.status(403).json({error:'You are not authorized to delete this asset'})
 	}
   })
 
