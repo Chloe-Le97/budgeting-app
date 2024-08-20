@@ -19,16 +19,6 @@ const tokenExtractor = (req, res, next) => {
 	next()
   }
 
-router.get('/', async (req, res) => {
-  const users = await User.findAll({
-	include:{
-		model : Expense,
-		attributes: { exclude: ['userId'] }
-	}
-  })
-  res.json(users)
-})
-
 router.post('/', async (req, res) => {
 	const { username, name, password } = req.body
 
@@ -42,20 +32,9 @@ router.post('/', async (req, res) => {
 		name,
 		passwordHash,
 	})
-
-	// const user = User.build(req.body)
-	// user.passwordHash = passwordHash
-	// await user.save()
+	
+	await Asset.create({name:'Cash', userId: user.id})
     res.json(user)
-})
-
-router.get('/:id', async (req, res) => {
-  const user = await User.findByPk(req.params.id)
-  if (user) {
-    res.json(user)
-  } else {
-    res.status(404).end()
-  }
 })
 
 router.put('/:username', tokenExtractor ,async(req,res) =>{

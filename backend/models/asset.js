@@ -16,7 +16,8 @@ Asset.init({
   },
   value: {
     type: DataTypes.INTEGER,
-    allowNull: false
+    allowNull: false,
+    defaultValue: 0
   },
   userId:{
     type: DataTypes.INTEGER,

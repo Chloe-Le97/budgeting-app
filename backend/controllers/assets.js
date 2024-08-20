@@ -49,7 +49,7 @@ const tokenExtractor = (req, res, next) => {
 		res.json(asset)
 	}
 	else{
-		return res.status(403).json({ error: 'You are not authorized to delete this blog post' });
+		return res.status(403).json({ error: 'You are not authorized to edit this asset' });
 	} 
   })
 
