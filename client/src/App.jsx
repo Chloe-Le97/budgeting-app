@@ -1,9 +1,14 @@
 import { useState, useEffect } from 'react'
+import { Route, Routes } from 'react-router-dom';
+import NavigationMenu from './components/NavigationMenu/NavigationMenu';
 import loginService from './services/login'
 import userService from './services/users'
 import expenseService from './services/expenses'
+import assetService from './services/assets'
 import Notification from './components/Notification/Notification'
+import Assets from './components/Assets/Assets';
 import Expenses from './components/Expenses/Expenses'
+import { Button } from 'antd';
 
 function App() {
   const [username, setUsername] = useState('') 
@@ -18,6 +23,7 @@ function App() {
       const user = JSON.parse(loggedUserJSON)
       setUser(user)
       expenseService.setToken(user.token)
+      assetService.setToken(user.token)
     }
   }, [])
   
@@ -34,6 +40,7 @@ function App() {
       ) 
       setUser(user)
       expenseService.setToken(user.token)
+      assetService.setToken(user.token)
       setUsername('')
       setPassword('')
     }catch(exception){
@@ -94,7 +101,7 @@ function App() {
           onChange={({ target }) => setPassword(target.value)}
         />
       </div>
-      <button type="submit">sign up</button>
+      <Button type="submit">sign up</Button>
     </form>      
   )
 
@@ -118,26 +125,28 @@ function App() {
           onChange={({ target }) => setPassword(target.value)}
         />
       </div>
-      <button type="submit">login</button>
+      <Button type="submit">login</Button>
     </form> 
     )
 
   return (
-    <div>
+    <>
+      <NavigationMenu user={user}/>
       <Notification message={message} />
-      {user === null ? (
-        <div>
-          {loginForm()}
-          {signUpForm()}
-        </div>
-      ) :
-      (
       <div>
-        Welcome to budgeting
-        <Expenses user={user} />
+        {user === null ? (
+          <Routes>
+            <Route path="/" element={loginForm()}></Route>
+            <Route path="/signup" element={signUpForm()}></Route>
+          </Routes>
+        ) :(
+          <Routes>
+            <Route path="/" element={<Expenses/>}></Route>
+            <Route path="/assets" element={<Assets/>}></Route>
+          </Routes>
+        )}
       </div>
-      )}
-    </div>
+    </>
   )
 }
 

@@ -1,5 +1,5 @@
 import axios from 'axios'
-const baseUrl = 'http://192.168.0.115:3001/api/expenses'
+const baseUrl = 'http://192.168.0.115:3001/api/assets'
 
 let token = null
 

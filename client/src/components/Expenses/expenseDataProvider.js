@@ -1,11 +1,12 @@
 import expenseService from '../../services/expenses'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import {assetQueryKey} from '../Assets/assetDataProvider'
 
-const queryKey = 'expenses'
+const expenseQueryKey = 'expenses'
 
 export const useGetExpense = () =>{
     const {data, isLoading} = useQuery({
-        queryKey: [queryKey],
+        queryKey: [expenseQueryKey],
         queryFn: () => expenseService.getAll()
     })
     return {data, isLoading}
@@ -16,7 +17,8 @@ export const useCreateExpenseMutation = () =>{
     const {mutateAsync:createExpense} =  useMutation({
         mutationFn: expenseService.create,
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: [queryKey] })
+            queryClient.invalidateQueries({ queryKey: [expenseQueryKey] })
+            queryClient.invalidateQueries({ queryKey: [assetQueryKey] })
             // queryClient.setQueryData({queryKey},(oldData) => oldData?.concat(expense))
         }
       })

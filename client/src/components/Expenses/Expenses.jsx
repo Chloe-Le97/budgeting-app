@@ -1,29 +1,32 @@
-import {useState, useEffect} from 'react'
-import expenseService from '../../services/expenses'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import React from 'react';
 import { useGetExpense, useCreateExpenseMutation } from './expenseDataProvider'
+import { useGetAsset } from '../Assets/assetDataProvider';
+import { Button, Form, Input, Select, Space } from 'antd';
+const { Option } = Select;
+
+
 
 const Expenses = ({user}) => {
-
+    const [form] = Form.useForm();
 
     const {data, isLoading} = useGetExpense()
+    const {data: dataAsset, isLoadingAsset} = useGetAsset()
+
     const {createExpense} = useCreateExpenseMutation()
 
-    console.log('expense data:',data)
+    console.log(dataAsset)
 
-    const addExpense = async (event) => {
-        event.preventDefault()
-        const money = event.target.money.value
-        event.target.money.value = ''
-        const text = event.target.text.value
-        event.target.text.value = ''
-        const category = event.target.category.value
-        event.target.category.value = ''
-        createExpense({money,text,category,assetId:2})
-      }
+    const options = dataAsset?.map(asset => ({value:asset.id,label:asset.name}))
 
-
-    
+    const addExpense = async (values) => {
+        const money = values.money
+        const text = values.text
+        const category = values.category
+        const assetId = values.asset
+        console.log(values.asset)
+        createExpense({money,text,category,assetId})
+        form.resetFields();
+    }
 
 
     return (
@@ -34,14 +37,38 @@ const Expenses = ({user}) => {
                     {expense.text} {expense.money}€
                 </div>
             ))}
-            <form onSubmit={addExpense}>
-                <div>
-                Value<input name="money" type="number"></input>
-                </div>
-                <div>Description <input name="text" type="text"></input></div>
-                <div>Category<input name="category" type="category"></input></div>
-                <button type='submit'>Add expense</button>
-            </form>
+            <Form name="basic" onFinish={addExpense} form={form}>
+                <Form.Item name="money" label="Value">
+                    <Input />
+                </Form.Item>
+                <Form.Item name="text" label="Description">
+                    <Input />
+                </Form.Item>
+                <Form.Item name="category" label="Category">
+                    <Input />
+                </Form.Item>
+                <Form.Item
+                    name="asset"
+                    label="Asset"
+                    rules={[
+                    {
+                        required: true,
+                    },
+                    ]}
+                >
+                    <Select
+                    placeholder="Select an asset"
+                    // onChange={onAssetChange}
+                    options={options}
+                    allowClear
+                    >
+                        {/* {dataAsset.map(asset =>
+                            <Option key={asset.id} value={asset.id}>{asset.name}</Option>
+                        )} */}
+                    </Select>
+                </Form.Item>
+                <Button type="primary" htmlType="submit">Add expense</Button>
+            </Form>
         </div>
     )
 }

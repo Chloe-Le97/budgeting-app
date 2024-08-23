@@ -43,11 +43,13 @@ router.post('/',tokenExtractor, async(req,res)=>{
 	})
 
 	if(asset){
+		asset.value = asset.value - req.body.money
 		const expense = await Expense.create({
 			...req.body,
 			assetId: req.body.assetId,
 			userId: user.id
 		})
+		await asset.save()
 		res.json(expense)
 	}else{
 		return res.status(401).json({ error: 'This asset is not belong to this user' })
