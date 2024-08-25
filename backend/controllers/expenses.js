@@ -46,6 +46,7 @@ router.post('/',tokenExtractor, async(req,res)=>{
 		asset.value = asset.value - req.body.money
 		const expense = await Expense.create({
 			...req.body,
+			money: 0 - req.body.money,
 			assetId: req.body.assetId,
 			userId: user.id
 		})
@@ -58,15 +59,23 @@ router.post('/',tokenExtractor, async(req,res)=>{
 })
 
 router.put('/:id',tokenExtractor, async(req,res)=>{
-	console.log(req.body)
+	// console.log(req.body)
 	const user = await User.findByPk(req.decodedToken.id)
 	const expense = await Expense.findByPk(req.params.id)
+	const asset = await Asset.findByPk(expense.assetId)
+	const assetChange = req.body.money - expense.money
+
+	console.log(assetChange)
+
 	if(expense.userId === user.id){
 		expense.money = req.body.money
 		expense.text = req.body.text
 		expense.category = req.body.category
-		
+
+		asset.value = asset.value + assetChange
+
 		await expense.save()
+		await asset.save()
 		res.json(expense)
 	}
 	else{

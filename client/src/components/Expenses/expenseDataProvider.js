@@ -24,3 +24,16 @@ export const useCreateExpenseMutation = () =>{
       })
       return {createExpense}
 } 
+
+export const useUpdateExpenseMutation = () =>{
+    const queryClient = useQueryClient()
+    const {mutateAsync:updateExpense} =  useMutation({
+        mutationFn: ({id, data}) => expenseService.update(id,data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: [expenseQueryKey] })
+            queryClient.invalidateQueries({ queryKey: [assetQueryKey] })
+        }
+      })
+      return {updateExpense}
+} 
+
