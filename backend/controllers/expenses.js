@@ -43,14 +43,14 @@ router.post('/',tokenExtractor, async(req,res)=>{
 	})
 
 	if(asset){
-		asset.value = asset.value - req.body.money
+		// asset.value = asset.value - req.body.money
 		const expense = await Expense.create({
 			...req.body,
 			money: 0 - req.body.money,
 			assetId: req.body.assetId,
 			userId: user.id
 		})
-		await asset.save()
+		// await asset.save()
 		res.json(expense)
 	}else{
 		return res.status(401).json({ error: 'This asset is not belong to this user' })
@@ -62,20 +62,15 @@ router.put('/:id',tokenExtractor, async(req,res)=>{
 	// console.log(req.body)
 	const user = await User.findByPk(req.decodedToken.id)
 	const expense = await Expense.findByPk(req.params.id)
-	const asset = await Asset.findByPk(expense.assetId)
-	const assetChange = req.body.money - expense.money
-
-	console.log(assetChange)
 
 	if(expense.userId === user.id){
 		expense.money = req.body.money
 		expense.text = req.body.text
 		expense.category = req.body.category
-
-		asset.value = asset.value + assetChange
-
+		expense.assetId = req.body.assetId
+	
 		await expense.save()
-		await asset.save()
+		
 		res.json(expense)
 	}
 	else{
@@ -86,8 +81,10 @@ router.put('/:id',tokenExtractor, async(req,res)=>{
 router.delete('/:id', tokenExtractor, async(req,res) =>{
 	const user = await User.findByPk(req.decodedToken.id)
 	const expense = await Expense.findByPk(req.params.id)
+
 	if(expense.userId === user.id){
 		await expense.destroy()
+
 		res.status(204).end()
 	} else {
 		return res.status(403).json({error:'You are not authorized to delete this asset'})

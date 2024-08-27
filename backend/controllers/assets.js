@@ -2,8 +2,10 @@ const router = require('express').Router()
 const jwt = require('jsonwebtoken')
 const { SECRET } = require('../util/config')
 const { Op } = require('sequelize')
+const {sequelize} = require('../util/db')
+const R = require('ramda')
 
-const { Asset, User } = require('../models')
+const { Asset, User, Expense } = require('../models')
 
 const tokenExtractor = (req, res, next) => {
 	const authorization = req.get('authorization')
@@ -22,19 +24,74 @@ const tokenExtractor = (req, res, next) => {
 
   router.get('/', tokenExtractor ,async (req, res) => {
 	const user = await User.findByPk(req.decodedToken.id)
-	const assets = await Asset.findAll({
+	// const assets = await Asset.findAll({
+	// 	where: {
+	// 		userId: user.id
+	// 	}
+	//   })
+	const assetSum = await Expense.findAll({
 		where: {
 			userId: user.id
-		}
+		},
+		attributes: [
+		  "asset_id",
+		  [sequelize.fn("sum", sequelize.col("money")), "total_money"],
+		],
+		group: ["asset_id"],
+	  });
+
+	  console.log(JSON.stringify(assetSum, null, 2))
+	  const assetsIdArray = R.map(R.path(['dataValues','asset_id']), assetSum)
+	  
+	  const assets = await Asset.findAll({
+		where:{
+			id: assetsIdArray
+		},
+		attributes:[
+			"name", ["id", "asset_id"]
+		]
 	  })
-	  console.log(JSON.stringify(assets, null, 2))
-	  res.json(assets)
+	  
+	  // Create a map to combine objects by asset_id
+		let combinedMap = new Map();
+
+		// Process first array
+		assetSum.forEach(item => {
+			combinedMap.set(item.dataValues.asset_id, { ...item.dataValues });
+		});
+
+		// Process second array and merge dataValues
+		assets.forEach(item => {
+			if (combinedMap.has(item.dataValues.asset_id)) {
+				// Merge existing object dataValues with new dataValues
+				let existingObject = combinedMap.get(item.dataValues.asset_id);
+				combinedMap.set(item.dataValues.asset_id, { ...existingObject, ...item.dataValues });
+			} else {
+				combinedMap.set(item.dataValues.asset_id, { ...item.dataValues });
+			}
+		});
+
+	// Convert the map back to an array
+	let combinedArray = Array.from(combinedMap.values());
+
+	res.json(combinedArray)
   })
 
   router.post('/',tokenExtractor, async(req,res)=>{
 	console.log(req.body)
 	const user = await User.findByPk(req.decodedToken.id)
-	const asset = await Asset.create({...req.body,userId: user.id})
+	const asset = await Asset.create({
+		name: req.body.name,
+		userId: user.id
+	})
+
+	await Expense.create({
+		category: 'initial balance',
+		money: req.body.value,
+		assetId: asset.id,
+		userId: user.id
+	})
+
 	res.json(asset)
   })
 
@@ -43,10 +100,12 @@ const tokenExtractor = (req, res, next) => {
 	const user = await User.findByPk(req.decodedToken.id)
 	const asset = await Asset.findByPk(req.params.id)
 	if(asset.userId === user.id){
-		asset.value = req.body.value
-		asset.name = req.body.name
-		await asset.save()
-		res.json(asset)
+		await Expense.create({
+			category: 'update balance',
+			money: req.body.differentValue,
+			assetId: asset.id,
+			userId: user.id
+		})
 	}
 	else{
 		return res.status(403).json({ error: 'You are not authorized to edit this asset' });

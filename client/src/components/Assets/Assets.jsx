@@ -1,39 +1,42 @@
-import React from 'react';
-import { useGetAsset, useCreateAssetMutation } from './assetDataProvider'
 import { Button, Form, Input } from 'antd';
+import React from 'react';
 
-const Assets = ({user}) => {
-    const assetFormRef = React.useRef(null);
+import { useCreateAssetMutation, useGetAsset } from './assetDataProvider';
 
-    const {data, isLoading} = useGetAsset()
-    const {createAsset} = useCreateAssetMutation()
+const Assets = ({ user }) => {
+  const assetFormRef = React.useRef(null);
 
-    const addAsset = async (values) => {
-        const name = values.name
-        const value = values.value
-        createAsset({name,value})
-        assetFormRef.current.resetFields();
-      }
+  const { data, isLoading } = useGetAsset();
+  const { createAsset } = useCreateAssetMutation();
 
-    return (
-        <div>
-            <h1>Assets</h1>
-            {data?.map(asset => (
-                <div key={asset.id}>
-                    {asset.name} {asset.value}€
-                </div>
-            ))}
-            <Form name="basic" onFinish={addAsset} ref={assetFormRef}>
-                <Form.Item name="name" label="Asset name">
-                    <Input />
-                </Form.Item>
-                <Form.Item name="value" label="Asset value">
-                    <Input />
-                </Form.Item>
-                <Button type="primary" htmlType="submit">Add asset</Button>
-            </Form>
+  const addAsset = async (values) => {
+    const name = values.name;
+    const value = values.value;
+    createAsset({ name, value });
+    assetFormRef.current.resetFields();
+  };
+
+  return (
+    <div>
+      <h1>Assets</h1>
+      {data?.map((asset) => (
+        <div key={asset.asset_id}>
+          {asset.name} {asset.total_money}€
         </div>
-    )
-}
+      ))}
+      <Form name="basic" onFinish={addAsset} ref={assetFormRef}>
+        <Form.Item name="name" label="Asset name">
+          <Input />
+        </Form.Item>
+        <Form.Item name="value" label="Asset value">
+          <Input />
+        </Form.Item>
+        <Button type="primary" htmlType="submit">
+          Add asset
+        </Button>
+      </Form>
+    </div>
+  );
+};
 
-export default Assets
+export default Assets;

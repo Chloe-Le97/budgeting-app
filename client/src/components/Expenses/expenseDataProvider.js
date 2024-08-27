@@ -37,3 +37,14 @@ export const useUpdateExpenseMutation = () =>{
       return {updateExpense}
 } 
 
+export const useRemoveExpenseMutation = () =>{
+    const queryClient = useQueryClient()
+    const {mutateAsync:removeExpense} =  useMutation({
+        mutationFn: ({id}) => expenseService.remove(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: [expenseQueryKey] })
+            queryClient.invalidateQueries({ queryKey: [assetQueryKey] })
+        }
+      })
+      return {removeExpense}
+} 

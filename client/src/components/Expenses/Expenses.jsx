@@ -14,6 +14,7 @@ import { useGetAsset } from '../Assets/assetDataProvider';
 import {
   useCreateExpenseMutation,
   useGetExpense,
+  useRemoveExpenseMutation,
   useUpdateExpenseMutation,
 } from './expenseDataProvider';
 
@@ -33,11 +34,48 @@ const Expenses = ({ user }) => {
 
   const { createExpense } = useCreateExpenseMutation();
   const { updateExpense } = useUpdateExpenseMutation();
+  const { removeExpense } = useRemoveExpenseMutation();
 
   const options = dataAsset?.map((asset) => ({
-    value: asset.id,
+    value: asset.asset_id,
     label: asset.name,
   }));
+
+  const optionsEdit = dataAsset?.map((asset) => ({
+    value: asset.asset_id,
+    label: asset.name,
+  }));
+
+  console.log(dataAsset);
+
+  const getDate = (expense) =>
+    new Date(expense.createdAt).toISOString().split('T')[0];
+
+  let groupedExpenses;
+  let dataTable = [];
+  if (data) {
+    groupedExpenses = R.groupBy(getDate, data);
+    const sortedData = Object.fromEntries(
+      Object.entries(groupedExpenses).sort(
+        (a, b) => new Date(b[0]) - new Date(a[0]),
+      ),
+    );
+
+    console.log(sortedData);
+
+    Object.entries(sortedData).map(([date, expenses]) => {
+      expenses.map((expense) =>
+        dataTable.push({
+          key: expense.id,
+          date: date,
+          category: expense.category,
+          description: expense.text,
+          value: expense.money,
+          asset: expense.assetId,
+        }),
+      );
+    });
+  }
 
   const EditableCell = ({
     editing,
@@ -50,6 +88,13 @@ const Expenses = ({ user }) => {
     ...restProps
   }) => {
     const inputNode = <Input />;
+    const selectNode = (
+      <Select
+        placeholder="Select an asset"
+        options={optionsEdit}
+        allowClear
+      ></Select>
+    );
     return (
       <td {...restProps}>
         {editing ? (
@@ -65,7 +110,7 @@ const Expenses = ({ user }) => {
               },
             ]}
           >
-            {inputNode}
+            {dataIndex == 'asset' ? selectNode : inputNode}
           </Form.Item>
         ) : (
           children
@@ -80,6 +125,7 @@ const Expenses = ({ user }) => {
       value: '',
       description: '',
       category: '',
+      asset: '',
       ...record,
     });
     setEditingKey(record.key);
@@ -92,10 +138,12 @@ const Expenses = ({ user }) => {
   const save = async (value) => {
     console.log(editForm.getFieldValue());
     const formValue = editForm.getFieldValue();
+    console.log(formValue);
     const newObject = {
       money: formValue.value,
       text: formValue.description,
       category: formValue.category,
+      assetId: formValue.asset,
     };
     await updateExpense({ id: formValue.key, data: newObject });
     setEditingKey('');
@@ -106,40 +154,13 @@ const Expenses = ({ user }) => {
     const text = values.text;
     const category = values.category;
     const assetId = values.asset;
-    createExpense({ money, text, category, assetId });
+    await createExpense({ money, text, category, assetId });
     form.resetFields();
   };
 
-  const getDate = (expense) =>
-    new Date(expense.createdAt).toISOString().split('T')[0];
-
-  let groupedExpenses;
-  let dataTable = [];
-  if (data) {
-    const sortedExpenses = R.sort(
-      R.comparator(
-        (a, b) =>
-          new Date(b.createdAt).toISOString().split('T')[0] -
-          new Date(a.createdAt).toISOString().split('T')[0],
-      ),
-      data,
-    );
-    console.log(sortedExpenses);
-    groupedExpenses = R.groupBy(getDate, sortedExpenses);
-    console.log(groupedExpenses);
-
-    Object.entries(groupedExpenses).map(([date, expenses]) => {
-      expenses.map((expense) =>
-        dataTable.push({
-          key: expense.id,
-          date: date,
-          category: expense.category,
-          description: expense.text,
-          value: expense.money,
-        }),
-      );
-    });
-  }
+  const delExpense = async (id) => {
+    await removeExpense({ id });
+  };
 
   const getCountByDate = (date, obj) => {
     return obj[date] ? obj[date].length : 0;
@@ -154,8 +175,10 @@ const Expenses = ({ user }) => {
 
   const columns = [
     {
-      title: 'Date',
-      width: '20%',
+      title: () => {
+        return <div className="text-center">Date</div>;
+      },
+      width: '18%',
       dataIndex: 'date',
       onCell: (record, index) => {
         if (record.date !== sameKeyValue) {
@@ -190,15 +213,26 @@ const Expenses = ({ user }) => {
       },
     },
     {
+      title: 'Asset',
+      dataIndex: 'asset',
+      width: '15%',
+      editable: true,
+      render: (value) => {
+        const assetColumn = dataAsset?.find(
+          (asset) => asset.asset_id === value,
+        );
+        return <div>{assetColumn?.name}</div>;
+      },
+    },
+    {
       title: 'Category',
       dataIndex: 'category',
-      width: '20%',
+      width: '10%',
       editable: true,
     },
     {
       title: 'Description',
       dataIndex: 'description',
-      width: '40%',
       editable: true,
     },
     {
@@ -206,10 +240,17 @@ const Expenses = ({ user }) => {
       dataIndex: 'value',
       width: '10%',
       editable: true,
+      render: (value) => {
+        if (value > 0) {
+          return <div>+{value} €</div>;
+        }
+        return <div>{value} €</div>;
+      },
     },
     {
       title: 'Edit',
       dataIndex: 'edit',
+      width: '5%',
       render: (_, value) => {
         const editable = isEditing(value);
         return editable ? (
@@ -233,6 +274,25 @@ const Expenses = ({ user }) => {
           >
             Edit
           </Typography.Link>
+        );
+      },
+    },
+    {
+      title: 'Delete',
+      dataIndex: 'delete',
+      width: '5%',
+      render: (_, value) => {
+        return (
+          <Popconfirm
+            title="Delete the expense"
+            description="Are you sure to delete this expense?"
+            onConfirm={() => delExpense(value.key)}
+            // onCancel={cancel}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button danger>Delete</Button>
+          </Popconfirm>
         );
       },
     },
@@ -260,24 +320,11 @@ const Expenses = ({ user }) => {
 
   return (
     <div>
-      <h1>Expenses</h1>
       <div>
         {groupedExpenses == null ? (
           <></>
         ) : (
           <div>
-            {R.keys(groupedExpenses).map((key) => (
-              <div key={key}>
-                <h3>{key}</h3>
-                {groupedExpenses[key].map((expense) => (
-                  <div key={expense.id}>
-                    <p>
-                      {expense.text}: {expense.money}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            ))}
             <Form form={editForm} component={false}>
               <Table
                 components={{
@@ -298,6 +345,7 @@ const Expenses = ({ user }) => {
           </div>
         )}
       </div>
+      <h2>Add expense</h2>
       <Form name="basic" onFinish={addExpense} form={form}>
         <Form.Item name="money" label="Value">
           <Input />
