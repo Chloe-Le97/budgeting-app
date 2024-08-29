@@ -99,13 +99,24 @@ const tokenExtractor = (req, res, next) => {
 	console.log(req.body)
 	const user = await User.findByPk(req.decodedToken.id)
 	const asset = await Asset.findByPk(req.params.id)
+	
+	asset.name = req.body.name
+
 	if(asset.userId === user.id){
-		await Expense.create({
+		const updateAsset = await Expense.create({
 			category: 'update balance',
 			money: req.body.differentValue,
 			assetId: asset.id,
 			userId: user.id
 		})
+		await asset.save()
+
+		const returnedAsset = {
+			asset_id: asset.id,
+			name : asset.name,
+			total_money:  updateAsset.money
+		}
+		res.json(returnedAsset)
 	}
 	else{
 		return res.status(403).json({ error: 'You are not authorized to edit this asset' });

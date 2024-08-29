@@ -46,8 +46,6 @@ const Expenses = ({ user }) => {
     label: asset.name,
   }));
 
-  console.log(dataAsset);
-
   const getDate = (expense) =>
     new Date(expense.createdAt).toISOString().split('T')[0];
 
@@ -317,6 +315,8 @@ const Expenses = ({ user }) => {
   const handlePagination = (pagination) => {
     setPaginationInfo(pagination);
   };
+
+  console.log(dataTable);
 
   return (
     <div>
