@@ -9,7 +9,11 @@ import {
 } from 'antd';
 import { useState } from 'react';
 
-import { useCreateAssetMutation, useGetAsset } from './assetDataProvider';
+import {
+  useCreateAssetMutation,
+  useGetAsset,
+  useUpdateAssetMutation,
+} from './assetDataProvider';
 
 const Assets = () => {
   const [form] = Form.useForm();
@@ -20,6 +24,7 @@ const Assets = () => {
 
   const { data, isLoading } = useGetAsset();
   const { createAsset } = useCreateAssetMutation();
+  const { updateAsset } = useUpdateAssetMutation();
 
   const EditableCell = ({
     editing,
@@ -73,7 +78,12 @@ const Assets = () => {
   const save = async (value) => {
     const formValue = editForm.getFieldValue();
     console.log(formValue);
-
+    console.log(value);
+    const newObject = {
+      name: formValue.name,
+      differentValue: formValue.total_money - value.total_money,
+    };
+    await updateAsset({ id: formValue.key, data: newObject });
     setEditingKey('');
   };
 

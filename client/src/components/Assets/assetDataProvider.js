@@ -1,5 +1,6 @@
 import assetService from '../../services/assets'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import {expenseQueryKey} from '../Expenses/expenseDataProvider'
 
 export const assetQueryKey = 'assets'
 
@@ -21,4 +22,16 @@ export const useCreateAssetMutation = () =>{
         }
       })
       return {createAsset}
+} 
+
+export const useUpdateAssetMutation = () =>{
+    const queryClient = useQueryClient()
+    const {mutateAsync:updateAsset} =  useMutation({
+        mutationFn: ({id, data}) => assetService.update(id,data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: [assetQueryKey] })
+            queryClient.invalidateQueries({ queryKey: [expenseQueryKey] })
+        }
+      })
+      return {updateAsset}
 } 

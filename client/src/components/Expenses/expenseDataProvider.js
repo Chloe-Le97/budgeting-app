@@ -2,7 +2,7 @@ import expenseService from '../../services/expenses'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {assetQueryKey} from '../Assets/assetDataProvider'
 
-const expenseQueryKey = 'expenses'
+export const expenseQueryKey = 'expenses'
 
 export const useGetExpense = () =>{
     const {data, isLoading} = useQuery({
