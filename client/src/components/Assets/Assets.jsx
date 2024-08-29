@@ -12,6 +12,7 @@ import { useState } from 'react';
 import {
   useCreateAssetMutation,
   useGetAsset,
+  useRemoveAssetMutation,
   useUpdateAssetMutation,
 } from './assetDataProvider';
 
@@ -25,6 +26,7 @@ const Assets = () => {
   const { data, isLoading } = useGetAsset();
   const { createAsset } = useCreateAssetMutation();
   const { updateAsset } = useUpdateAssetMutation();
+  const { removeAsset } = useRemoveAssetMutation();
 
   const EditableCell = ({
     editing,
@@ -87,7 +89,9 @@ const Assets = () => {
     setEditingKey('');
   };
 
-  console.log(data);
+  const delAsset = async (id) => {
+    await removeAsset({ id });
+  };
 
   const dataTable = data?.map((item) => {
     return {
@@ -120,9 +124,6 @@ const Assets = () => {
       width: '10%',
       editable: true,
       render: (value) => {
-        if (value > 0) {
-          return <div>+{value} €</div>;
-        }
         return <div>{value} €</div>;
       },
     },
@@ -165,7 +166,7 @@ const Assets = () => {
           <Popconfirm
             title="Delete the expense"
             description="Are you sure to delete this expense?"
-            // onConfirm={() => delExpense(value.key)}
+            onConfirm={() => delAsset(value.key)}
             // onCancel={cancel}
             okText="Yes"
             cancelText="No"
@@ -196,11 +197,6 @@ const Assets = () => {
   return (
     <div>
       <h1>Assets</h1>
-      {data?.map((asset) => (
-        <div key={asset.asset_id}>
-          {asset.name} {asset.total_money}€
-        </div>
-      ))}
       <Form form={editForm} component={false}>
         <Table
           components={{
@@ -217,6 +213,7 @@ const Assets = () => {
           }}
         />
       </Form>
+      <h2>Add new asset</h2>
       <Form name="basic" onFinish={addAsset} form={form}>
         <Form.Item name="name" label="Asset name">
           <Input />

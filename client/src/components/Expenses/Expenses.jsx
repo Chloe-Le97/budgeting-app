@@ -348,7 +348,7 @@ const Expenses = ({ user }) => {
       <h2>Add expense</h2>
       <Form name="basic" onFinish={addExpense} form={form}>
         <Form.Item name="money" label="Value">
-          <Input />
+          <Input type="number" />
         </Form.Item>
         <Form.Item name="text" label="Description">
           <Input />

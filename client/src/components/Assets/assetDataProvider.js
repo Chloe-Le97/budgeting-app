@@ -35,3 +35,15 @@ export const useUpdateAssetMutation = () =>{
       })
       return {updateAsset}
 } 
+
+export const useRemoveAssetMutation = () =>{
+    const queryClient = useQueryClient()
+    const {mutateAsync:removeAsset} =  useMutation({
+        mutationFn: ({id}) => assetService.remove(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: [expenseQueryKey] })
+            queryClient.invalidateQueries({ queryKey: [assetQueryKey] })
+        }
+      })
+      return {removeAsset}
+} 
