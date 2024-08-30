@@ -316,8 +316,6 @@ const Expenses = ({ user }) => {
     setPaginationInfo(pagination);
   };
 
-  console.log(dataTable);
-
   return (
     <div>
       <div>

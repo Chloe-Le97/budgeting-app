@@ -7,7 +7,7 @@ import {
   Table,
   Typography,
 } from 'antd';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import {
   useCreateAssetMutation,
@@ -93,15 +93,15 @@ const Assets = () => {
     await removeAsset({ id });
   };
 
-  const dataTable = data?.map((item) => {
-    return {
-      key: item.asset_id,
-      total_money: item.total_money,
-      name: item.name,
-    };
-  });
-
-  console.log(dataTable);
+  const dataTable = useMemo(
+    () =>
+      data?.map((item) => ({
+        key: item.asset_id,
+        total_money: item.total_money,
+        name: item.name,
+      })),
+    [data],
+  );
 
   const addAsset = async (values) => {
     const name = values.name;
@@ -114,14 +114,13 @@ const Assets = () => {
     {
       title: 'Asset',
       dataIndex: 'name',
-      width: '15%',
       editable: true,
     },
 
     {
       title: 'Value',
       dataIndex: 'total_money',
-      width: '10%',
+      width: '30%',
       editable: true,
       render: (value) => {
         return <div>{value} €</div>;

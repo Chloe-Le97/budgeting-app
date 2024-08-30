@@ -6,7 +6,10 @@ User.hasMany(Expense)
 Expense.belongsTo(User)
 
 User.hasMany(Asset)
-Asset.belongsTo(User)
+Asset.belongsTo(User, {
+  onDelete: 'cascade', 
+  hooks: true
+})
 
 Expense.belongsTo(Asset,  {
   onDelete: 'cascade', 
