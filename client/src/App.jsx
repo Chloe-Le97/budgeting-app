@@ -7,7 +7,6 @@ import Assets from './components/Assets/Assets';
 import Expenses from './components/Expenses/Expenses';
 import NavigationMenu from './components/NavigationMenu/NavigationMenu';
 import Notification from './components/Notification/Notification';
-import assetService from './services/assets';
 import service from './services/helper';
 import loginService from './services/login';
 import userService from './services/users';
