@@ -11,3 +11,4 @@ const createIncome = async(newObject) =>{
 
 
 export default { createIncome }
+

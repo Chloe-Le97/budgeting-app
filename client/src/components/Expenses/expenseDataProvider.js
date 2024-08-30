@@ -1,4 +1,5 @@
 import expenseService from '../../services/expenses'
+import incomeService from '../../services/income'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {assetQueryKey} from '../Assets/assetDataProvider'
 
@@ -42,22 +43,24 @@ export const useUpdateExpenseMutation = () =>{
     const queryClient = useQueryClient()
     const {mutateAsync:updateExpense, isPending} =  useMutation({
         mutationFn: ({id, data}) => expenseService.updateExpense(id,data),
+
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: [expenseQueryKey] })
             queryClient.invalidateQueries({ queryKey: [assetQueryKey] })
         }
       })
-      return {updateExpense}
+      return {updateExpense, isPending}
 } 
 
 export const useRemoveExpenseMutation = () =>{
     const queryClient = useQueryClient()
     const {mutateAsync:removeExpense, isPending} =  useMutation({
         mutationFn: ({id}) => expenseService.updateExpense(id),
+
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: [expenseQueryKey] })
             queryClient.invalidateQueries({ queryKey: [assetQueryKey] })
         }
       })
-      return {removeExpense}
+      return {removeExpense, isPending}
 } 
