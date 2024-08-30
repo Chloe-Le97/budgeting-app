@@ -1,49 +1,29 @@
-import axios from 'axios'
-const baseUrl = 'http://192.168.0.115:3001/api/assets'
+import service from './helper'
+const url = 'api/assets'
 
-let token = null
+const getAllAsset = async() => {
+  const response = await service.getAll(url)
 
-const setToken = newToken => {
-  token = `Bearer ${newToken}`
+  return response
 }
 
-const getAll = async() => {
-  const config = {
-    headers: { Authorization: token },
-  }
+const createAsset = async(newObject) =>{
+ const response = await service.create(url, newObject)
 
-  const response = await axios.get(baseUrl, config)
-  return response.data
+ return response
+}
+
+const updateAsset = async(id,newObject) =>{
+  const response = await service.update(url,id,newObject)
+  
+  return response
+}
+
+const removeAsset = async(id) =>{
+ const response = await service.remove(url,id)
+
+ return response
 }
 
 
-const create = async newObject => {
-  const config = {
-    headers: { Authorization: token },
-  }
-
-  const response = await axios.post(baseUrl, newObject, config)
-  return response.data
-}
-
-const update =  async (id, newObject) => {
-  const config = {
-    headers: { Authorization: token },
-  }
-
-  console.log(newObject)
-
-  const response = await axios.put(`${ baseUrl }/${id}`, newObject, config)
-  return response.data
-}
-
-const remove =  async (id) => {
-  const config = {
-    headers: { Authorization: token },
-  }
-
-  const response = await axios.delete(`${ baseUrl }/${id}`, config)
-  return response.data
-}
-
-export default { getAll, create, update, setToken, remove }
+export default { getAllAsset, createAsset, updateAsset, removeAsset }

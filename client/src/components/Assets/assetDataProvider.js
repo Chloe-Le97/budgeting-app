@@ -7,7 +7,7 @@ export const assetQueryKey = 'assets'
 export const useGetAsset = () =>{
     const {data, isLoading} = useQuery({
         queryKey: [assetQueryKey],
-        queryFn: () => assetService.getAll()
+        queryFn: () => assetService.getAllAsset()
     })
     return {data, isLoading}
 }
@@ -15,7 +15,7 @@ export const useGetAsset = () =>{
 export const useCreateAssetMutation = () =>{
     const queryClient = useQueryClient()
     const {mutateAsync:createAsset, isLoading : isMutating} =  useMutation({
-        mutationFn: assetService.create,
+        mutationFn: assetService.createAsset,
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: [assetQueryKey] })
             // queryClient.setQueryData({queryKey},(oldData) => oldData?.concat(expense))
@@ -27,7 +27,7 @@ export const useCreateAssetMutation = () =>{
 export const useUpdateAssetMutation = () =>{
     const queryClient = useQueryClient()
     const {mutateAsync:updateAsset, isLoading} =  useMutation({
-        mutationFn: ({id, data}) => assetService.update(id,data),
+        mutationFn: ({id, data}) => assetService.updateAsset(id,data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: [assetQueryKey] })
             queryClient.invalidateQueries({ queryKey: [expenseQueryKey] })
@@ -39,7 +39,7 @@ export const useUpdateAssetMutation = () =>{
 export const useRemoveAssetMutation = () =>{
     const queryClient = useQueryClient()
     const {mutateAsync:removeAsset, isLoading} =  useMutation({
-        mutationFn: ({id}) => assetService.remove(id),
+        mutationFn: ({id}) => assetService.removeAsset(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: [expenseQueryKey] })
             queryClient.invalidateQueries({ queryKey: [assetQueryKey] })
