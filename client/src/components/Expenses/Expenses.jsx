@@ -11,6 +11,8 @@ import * as R from 'ramda';
 import React, { useState } from 'react';
 
 import { useGetAsset } from '../Assets/assetDataProvider';
+import ExpensesForm from './ExpensesForm';
+import IncomeForm from './IncomeForm';
 import {
   useCreateExpenseMutation,
   useGetExpense,
@@ -19,8 +21,6 @@ import {
 } from './expenseDataProvider';
 
 const Expenses = ({ user }) => {
-  const [form] = Form.useForm();
-
   const [editForm] = Form.useForm();
   const [editingKey, setEditingKey] = useState('');
   const [paginationInfo, setPaginationInfo] = useState({
@@ -35,11 +35,6 @@ const Expenses = ({ user }) => {
   const { createExpense } = useCreateExpenseMutation();
   const { updateExpense } = useUpdateExpenseMutation();
   const { removeExpense } = useRemoveExpenseMutation();
-
-  const options = dataAsset?.map((asset) => ({
-    value: asset.asset_id,
-    label: asset.name,
-  }));
 
   const optionsEdit = dataAsset?.map((asset) => ({
     value: asset.asset_id,
@@ -58,8 +53,6 @@ const Expenses = ({ user }) => {
         (a, b) => new Date(b[0]) - new Date(a[0]),
       ),
     );
-
-    console.log(sortedData);
 
     Object.entries(sortedData).map(([date, expenses]) => {
       expenses.map((expense) =>
@@ -147,15 +140,6 @@ const Expenses = ({ user }) => {
     setEditingKey('');
   };
 
-  const addExpense = async (values) => {
-    const money = values.money;
-    const text = values.text;
-    const category = values.category;
-    const assetId = values.asset;
-    await createExpense({ money, text, category, assetId });
-    form.resetFields();
-  };
-
   const delExpense = async (id) => {
     await removeExpense({ id });
   };
@@ -240,7 +224,7 @@ const Expenses = ({ user }) => {
       editable: true,
       render: (value) => {
         if (value > 0) {
-          return <div>+{value} €</div>;
+          return <div className="text-purple-700">+{value} €</div>;
         }
         return <div>{value} €</div>;
       },
@@ -343,36 +327,8 @@ const Expenses = ({ user }) => {
           </div>
         )}
       </div>
-      <h2>Add expense</h2>
-      <Form name="basic" onFinish={addExpense} form={form}>
-        <Form.Item name="money" label="Value">
-          <Input type="number" />
-        </Form.Item>
-        <Form.Item name="text" label="Description">
-          <Input />
-        </Form.Item>
-        <Form.Item name="category" label="Category">
-          <Input />
-        </Form.Item>
-        <Form.Item
-          name="asset"
-          label="Asset"
-          rules={[
-            {
-              required: true,
-            },
-          ]}
-        >
-          <Select
-            placeholder="Select an asset"
-            options={options}
-            allowClear
-          ></Select>
-        </Form.Item>
-        <Button type="primary" htmlType="submit">
-          Add expense
-        </Button>
-      </Form>
+      <ExpensesForm />
+      <IncomeForm />
     </div>
   );
 };
