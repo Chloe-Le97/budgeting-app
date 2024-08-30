@@ -31,6 +31,11 @@ Expense.init({
 		allowNull: false,
 		references: { model: 'assets', key: 'id' },
 	},
+  isAssetUpdate:{
+    type: DataTypes.BOOLEAN,
+    defaultValue: 'false',
+    allowNull: false,
+  }
 }, {
   sequelize,
   underscored: true,

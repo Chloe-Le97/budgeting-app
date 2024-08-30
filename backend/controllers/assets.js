@@ -89,23 +89,35 @@ const tokenExtractor = (req, res, next) => {
 		category: 'initial balance',
 		money: req.body.value,
 		assetId: asset.id,
-		userId: user.id
+		userId: user.id,
+		isAssetUpdate: true
 	})
 
 	res.json(asset)
   })
 
   router.put('/:id',tokenExtractor, async(req,res)=>{
-	console.log(req.body)
 	const user = await User.findByPk(req.decodedToken.id)
 	const asset = await Asset.findByPk(req.params.id)
+	
+	asset.name = req.body.name
+
 	if(asset.userId === user.id){
-		await Expense.create({
+		const updateAsset = await Expense.create({
 			category: 'update balance',
 			money: req.body.differentValue,
 			assetId: asset.id,
-			userId: user.id
+			userId: user.id,
+			isAssetUpdate: true
 		})
+		await asset.save()
+
+		const returnedAsset = {
+			asset_id: asset.id,
+			name : asset.name,
+			total_money:  updateAsset.money
+		}
+		return res.json(returnedAsset)
 	}
 	else{
 		return res.status(403).json({ error: 'You are not authorized to edit this asset' });

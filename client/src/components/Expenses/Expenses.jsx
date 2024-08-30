@@ -46,8 +46,6 @@ const Expenses = ({ user }) => {
     label: asset.name,
   }));
 
-  console.log(dataAsset);
-
   const getDate = (expense) =>
     new Date(expense.createdAt).toISOString().split('T')[0];
 
@@ -348,7 +346,7 @@ const Expenses = ({ user }) => {
       <h2>Add expense</h2>
       <Form name="basic" onFinish={addExpense} form={form}>
         <Form.Item name="money" label="Value">
-          <Input />
+          <Input type="number" />
         </Form.Item>
         <Form.Item name="text" label="Description">
           <Input />

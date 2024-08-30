@@ -28,7 +28,7 @@ router.get('/', tokenExtractor ,async (req, res) => {
 		}
 	})
 	console.log(JSON.stringify(expenses, null, 2))
-	res.json(expenses)
+	res.json(expenses.filter(item => item.isAssetUpdate == false))
 })
 
 router.post('/',tokenExtractor, async(req,res)=>{
