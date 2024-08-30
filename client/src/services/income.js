@@ -1,21 +1,13 @@
-import axios from 'axios'
-const baseUrl = 'http://192.168.0.115:3001/api/income'
+import service from './helper'
 
-let token = null
-
-const setToken = newToken => {
-  token = `Bearer ${newToken}`
-}
+const url = 'api/income'
 
 
-const create = async newObject => {
-  const config = {
-    headers: { Authorization: token },
-  }
-
-  const response = await axios.post(baseUrl, newObject, config)
-  return response.data
-}
+const createIncome = async(newObject) =>{
+  const response = await service.create(url, newObject)
+ 
+  return response
+ }
 
 
-export default { create, setToken }
+export default { createIncome }
