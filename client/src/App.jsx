@@ -8,7 +8,7 @@ import Expenses from './components/Expenses/Expenses';
 import NavigationMenu from './components/NavigationMenu/NavigationMenu';
 import Notification from './components/Notification/Notification';
 import assetService from './services/assets';
-import expenseService from './services/expenses';
+import service from './services/helper';
 import loginService from './services/login';
 import userService from './services/users';
 
@@ -26,8 +26,7 @@ function App() {
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
       setUser(user);
-      expenseService.setToken(user.token);
-      assetService.setToken(user.token);
+      service.setToken(user.token);
     }
   }, []);
 
@@ -45,8 +44,7 @@ function App() {
         JSON.stringify(user),
       );
       setUser(user);
-      expenseService.setToken(user.token);
-      assetService.setToken(user.token);
+      service.setToken(user.token);
       setUsername('');
       setPassword('');
     } catch (exception) {
