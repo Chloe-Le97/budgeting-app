@@ -9,6 +9,7 @@ import NavigationMenu from './components/NavigationMenu/NavigationMenu';
 import Notification from './components/Notification/Notification';
 import assetService from './services/assets';
 import expenseService from './services/expenses';
+import incomeService from './services/income';
 import loginService from './services/login';
 import userService from './services/users';
 
@@ -28,6 +29,7 @@ function App() {
       setUser(user);
       expenseService.setToken(user.token);
       assetService.setToken(user.token);
+      incomeService.setToken(user.token);
     }
   }, []);
 
@@ -47,6 +49,7 @@ function App() {
       setUser(user);
       expenseService.setToken(user.token);
       assetService.setToken(user.token);
+      incomeService.setToken(user.token);
       setUsername('');
       setPassword('');
     } catch (exception) {
