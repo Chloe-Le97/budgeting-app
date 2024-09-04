@@ -3,7 +3,6 @@ const url = 'api/assets'
 
 const getAllAsset = async() => {
   const response = await service.getAll(url)
-
   return response
 }
 
