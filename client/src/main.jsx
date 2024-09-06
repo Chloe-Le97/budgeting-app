@@ -17,32 +17,39 @@ const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 5 * 60 * 1000 } },
 });
 
+// Create a Layout component that includes NavigationMenu
+const Layout = ({ children }) => (
+  <>
+    <NavigationMenu />
+    {children}
+  </>
+);
+
 const router = createBrowserRouter([
   {
     path: '/',
     element: (
-      <>
-        <NavigationMenu></NavigationMenu>
+      <Layout>
         <App />
-      </>
+      </Layout>
     ),
   },
   {
     path: '/assets',
     element: (
       <ProtectedRoute>
-        <NavigationMenu></NavigationMenu>
-        <Assets />
+        <Layout>
+          <Assets />
+        </Layout>
       </ProtectedRoute>
     ),
   },
   {
     path: '/signup',
     element: (
-      <>
-        <NavigationMenu></NavigationMenu>
+      <Layout>
         <SignUpForm></SignUpForm>
-      </>
+      </Layout>
     ),
   },
 ]);

@@ -10,6 +10,7 @@ const ProtectedRoute = ({ children }) => {
     return <div>Loading...</div>;
   }
   if (currentUser === null) {
+    console.log('no user');
     return <Navigate to="/" state={{ from: location }} replace />;
   }
   return <div>{children}</div>;
