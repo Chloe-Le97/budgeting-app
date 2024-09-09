@@ -31,46 +31,43 @@ const NavigationMenu = () => {
   const location = useLocation();
 
   return (
-    <>
-      <div className="flex justify-between items-center">
-        <div className="flex-1 pe-10">
-          {currentUser === null ? (
-            <Menu
-              selectedKeys={[location.pathname]}
-              mode="horizontal"
-              items={itemsAuth}
-            />
-          ) : (
-            <Menu
-              selectedKeys={[location.pathname]}
-              mode="horizontal"
-              items={itemUser}
-            />
-          )}
-        </div>
-        {currentUser !== null ? (
-          <Dropdown
-            dropdownRender={() => (
-              <Button
-                danger
-                onClick={handleLogout}
-                type="primary"
-                className="w-full"
-              >
-                Logout
-              </Button>
-            )}
-          >
-            <a onClick={(e) => e.preventDefault()}>
-              Welcome,{' '}
-              <span className="font-bold">{currentUser?.username}</span>
-            </a>
-          </Dropdown>
+    <div className="flex justify-between items-center mb-6">
+      <div className="flex-1 pe-10">
+        {currentUser === null ? (
+          <Menu
+            selectedKeys={[location.pathname]}
+            mode="horizontal"
+            items={itemsAuth}
+          />
         ) : (
-          <></>
+          <Menu
+            selectedKeys={[location.pathname]}
+            mode="horizontal"
+            items={itemUser}
+          />
         )}
       </div>
-    </>
+      {currentUser !== null ? (
+        <Dropdown
+          dropdownRender={() => (
+            <Button
+              danger
+              onClick={handleLogout}
+              type="primary"
+              className="w-full"
+            >
+              Logout
+            </Button>
+          )}
+        >
+          <a onClick={(e) => e.preventDefault()}>
+            Welcome, <span className="font-bold">{currentUser?.username}</span>
+          </a>
+        </Dropdown>
+      ) : (
+        <></>
+      )}
+    </div>
   );
 };
 

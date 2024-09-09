@@ -2,9 +2,11 @@ import {
   Button,
   Form,
   Input,
+  Modal,
   Popconfirm,
   Select,
   Table,
+  Tabs,
   Typography,
 } from 'antd';
 import * as R from 'ramda';
@@ -23,10 +25,7 @@ import {
 const Expenses = ({ user }) => {
   const [editForm] = Form.useForm();
   const [editingKey, setEditingKey] = useState('');
-  const [paginationInfo, setPaginationInfo] = useState({
-    current: 1,
-    pageSize: 10,
-  });
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const isEditing = (record) => record.key === editingKey;
 
   const { data } = useGetExpense();
@@ -167,9 +166,7 @@ const Expenses = ({ user }) => {
           const count = getCountByDate(record.date, groupedExpenses);
 
           sameKeyValue = record.date;
-          if (index == paginationInfo.current * paginationInfo.pageSize + 1) {
-            return { rowSpan: 0 };
-          }
+
           return {
             rowSpan: count,
           };
@@ -296,8 +293,34 @@ const Expenses = ({ user }) => {
     };
   });
 
-  const handlePagination = (pagination) => {
-    setPaginationInfo(pagination);
+  const tabItems = [
+    {
+      key: '1',
+      label: 'Expense',
+      children: <ExpensesForm />,
+    },
+    {
+      key: '2',
+      label: 'Income',
+      children: <IncomeForm />,
+    },
+    {
+      key: '3',
+      label: 'Transfer',
+      children: 'transfer form',
+    },
+  ];
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
   };
 
   return (
@@ -318,17 +341,27 @@ const Expenses = ({ user }) => {
                 dataSource={dataTable}
                 columns={mergedColumns}
                 rowClassName="editable-row"
-                pagination={{
-                  pageSize: 10,
-                }}
-                onChange={handlePagination}
+                pagination={false}
               />
             </Form>
           </div>
         )}
       </div>
-      <ExpensesForm />
-      <IncomeForm />
+      {/* <ExpensesForm />
+      <IncomeForm /> */}
+
+      <Button type="primary" onClick={showModal} className="modal-button">
+        +
+      </Button>
+      <Modal
+        title=""
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer=""
+      >
+        <Tabs defaultActiveKey="1" items={tabItems} />
+      </Modal>
     </div>
   );
 };
