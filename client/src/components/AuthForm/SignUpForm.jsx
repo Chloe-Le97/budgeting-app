@@ -7,6 +7,7 @@ const SignUpForm = () => {
   const [username, setUsername] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
+  const [message, setMessage] = useState(null);
 
   const handleSignUp = async (event) => {
     event.preventDefault();
@@ -32,38 +33,41 @@ const SignUpForm = () => {
   };
 
   return (
-    <form onSubmit={handleSignUp}>
-      <div>
-        Username
-        <Input
-          type="text"
-          value={username}
-          name="Username"
-          onChange={({ target }) => setUsername(target.value)}
-        />
-      </div>
-      <div>
-        Name
-        <Input
-          type="text"
-          value={name}
-          name="Username"
-          onChange={({ target }) => setName(target.value)}
-        />
-      </div>
-      <div>
-        Password
-        <Input
-          type="password"
-          value={password}
-          name="Password"
-          onChange={({ target }) => setPassword(target.value)}
-        />
-      </div>
-      <Button type="primary" htmlType="submit">
-        Sign up
-      </Button>
-    </form>
+    <div>
+      <div>{message}</div>
+      <form onSubmit={handleSignUp}>
+        <div>
+          Username
+          <Input
+            type="text"
+            value={username}
+            name="Username"
+            onChange={({ target }) => setUsername(target.value)}
+          />
+        </div>
+        <div>
+          Name
+          <Input
+            type="text"
+            value={name}
+            name="Username"
+            onChange={({ target }) => setName(target.value)}
+          />
+        </div>
+        <div>
+          Password
+          <Input
+            type="password"
+            value={password}
+            name="Password"
+            onChange={({ target }) => setPassword(target.value)}
+          />
+        </div>
+        <Button type="primary" htmlType="submit">
+          Sign up
+        </Button>
+      </form>
+    </div>
   );
 };
 
