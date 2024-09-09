@@ -8,7 +8,6 @@ body {
     padding: 10px 25px;
     position: relative; /* Ensure body is the positioning context */
     margin: 0 auto; /* Center the body within the viewport */
-    height: 200vh; /* Added height to allow for scrolling */
 }
 
 .modal-button {
@@ -18,4 +17,8 @@ body {
     position: fixed; /* Fixed to viewport but within body's max-width */
     bottom: 10px;
     right: calc((100vw - 1024px) / 2 + 10px); /* Align with body's right side */
+}
+
+.ant-tabs-nav{
+    margin-bottom: 32px !important;
 }

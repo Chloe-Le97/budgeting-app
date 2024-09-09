@@ -25,10 +25,6 @@ import {
 const Expenses = ({ user }) => {
   const [editForm] = Form.useForm();
   const [editingKey, setEditingKey] = useState('');
-  const [paginationInfo, setPaginationInfo] = useState({
-    current: 1,
-    pageSize: 10,
-  });
   const [isModalOpen, setIsModalOpen] = useState(false);
   const isEditing = (record) => record.key === editingKey;
 
@@ -170,9 +166,7 @@ const Expenses = ({ user }) => {
           const count = getCountByDate(record.date, groupedExpenses);
 
           sameKeyValue = record.date;
-          if (index == paginationInfo.current * paginationInfo.pageSize + 1) {
-            return { rowSpan: 0 };
-          }
+
           return {
             rowSpan: count,
           };
@@ -299,10 +293,6 @@ const Expenses = ({ user }) => {
     };
   });
 
-  const handlePagination = (pagination) => {
-    setPaginationInfo(pagination);
-  };
-
   const tabItems = [
     {
       key: '1',
@@ -351,11 +341,7 @@ const Expenses = ({ user }) => {
                 dataSource={dataTable}
                 columns={mergedColumns}
                 rowClassName="editable-row"
-                pagination={{
-                  pageSize: 10,
-                  position: ['bottomCenter'],
-                }}
-                onChange={handlePagination}
+                pagination={false}
               />
             </Form>
           </div>

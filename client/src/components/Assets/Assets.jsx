@@ -2,6 +2,7 @@ import {
   Button,
   Form,
   Input,
+  Modal,
   Popconfirm,
   Select,
   Table,
@@ -9,6 +10,7 @@ import {
 } from 'antd';
 import { useMemo, useState } from 'react';
 
+import AssetForm from './AssetForm';
 import {
   useCreateAssetMutation,
   useGetAsset,
@@ -17,9 +19,9 @@ import {
 } from './assetDataProvider';
 
 const Assets = () => {
-  const [form] = Form.useForm();
   const [editForm] = Form.useForm();
   const [editingKey, setEditingKey] = useState('');
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   const isEditing = (record) => record.key === editingKey;
 
@@ -102,13 +104,6 @@ const Assets = () => {
       })),
     [data],
   );
-
-  const addAsset = async (values) => {
-    const name = values.name;
-    const value = values.value;
-    createAsset({ name, value });
-    form.resetFields();
-  };
 
   const columns = [
     {
@@ -193,6 +188,18 @@ const Assets = () => {
     };
   });
 
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <div>
       <Form form={editForm} component={false}>
@@ -206,23 +213,21 @@ const Assets = () => {
           dataSource={dataTable}
           columns={mergedColumns}
           rowClassName="editable-row"
-          pagination={{
-            pageSize: 10,
-          }}
+          pagination={false}
         />
       </Form>
-      <h2>Add new asset</h2>
-      <Form name="basic" onFinish={addAsset} form={form}>
-        <Form.Item name="name" label="Asset name">
-          <Input />
-        </Form.Item>
-        <Form.Item name="value" label="Asset value">
-          <Input />
-        </Form.Item>
-        <Button type="primary" htmlType="submit">
-          Add asset
-        </Button>
-      </Form>
+      <Button type="primary" onClick={showModal} className="modal-button">
+        +
+      </Button>
+      <Modal
+        title=""
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer=""
+      >
+        <AssetForm />
+      </Modal>
     </div>
   );
 };
