@@ -363,7 +363,8 @@ const Expenses = ({ user }) => {
       </div>
       {/* <ExpensesForm />
       <IncomeForm /> */}
-      <Button type="primary" onClick={showModal}>
+
+      <Button type="primary" onClick={showModal} className="modal-button">
         +
       </Button>
       <Modal

@@ -195,7 +195,6 @@ const Assets = () => {
 
   return (
     <div>
-      <h1>Assets</h1>
       <Form form={editForm} component={false}>
         <Table
           components={{

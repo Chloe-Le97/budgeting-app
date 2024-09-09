@@ -2,8 +2,20 @@
 @tailwind components;
 @tailwind utilities;
 
-body{
+body {
     width: 100%;
     max-width: 1024px;
     padding: 10px 25px;
+    position: relative; /* Ensure body is the positioning context */
+    margin: 0 auto; /* Center the body within the viewport */
+    height: 200vh; /* Added height to allow for scrolling */
+}
+
+.modal-button {
+    border-radius: 50%;
+    height: 50px;
+    width: 50px;
+    position: fixed; /* Fixed to viewport but within body's max-width */
+    bottom: 10px;
+    right: calc((100vw - 1024px) / 2 + 10px); /* Align with body's right side */
 }
