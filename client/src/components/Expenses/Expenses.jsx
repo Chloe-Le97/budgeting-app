@@ -2,9 +2,11 @@ import {
   Button,
   Form,
   Input,
+  Modal,
   Popconfirm,
   Select,
   Table,
+  Tabs,
   Typography,
 } from 'antd';
 import * as R from 'ramda';
@@ -27,6 +29,7 @@ const Expenses = ({ user }) => {
     current: 1,
     pageSize: 10,
   });
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const isEditing = (record) => record.key === editingKey;
 
   const { data } = useGetExpense();
@@ -300,6 +303,36 @@ const Expenses = ({ user }) => {
     setPaginationInfo(pagination);
   };
 
+  const tabItems = [
+    {
+      key: '1',
+      label: 'Expense',
+      children: <ExpensesForm />,
+    },
+    {
+      key: '2',
+      label: 'Income',
+      children: <IncomeForm />,
+    },
+    {
+      key: '3',
+      label: 'Transfer',
+      children: 'transfer form',
+    },
+  ];
+
+  const showModal = () => {
+    setIsModalOpen(true);
+  };
+
+  const handleOk = () => {
+    setIsModalOpen(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalOpen(false);
+  };
+
   return (
     <div>
       <div>
@@ -320,6 +353,7 @@ const Expenses = ({ user }) => {
                 rowClassName="editable-row"
                 pagination={{
                   pageSize: 10,
+                  position: ['bottomCenter'],
                 }}
                 onChange={handlePagination}
               />
@@ -327,8 +361,20 @@ const Expenses = ({ user }) => {
           </div>
         )}
       </div>
-      <ExpensesForm />
-      <IncomeForm />
+      {/* <ExpensesForm />
+      <IncomeForm /> */}
+      <Button type="primary" onClick={showModal}>
+        +
+      </Button>
+      <Modal
+        title=""
+        open={isModalOpen}
+        onOk={handleOk}
+        onCancel={handleCancel}
+        footer=""
+      >
+        <Tabs defaultActiveKey="1" items={tabItems} />
+      </Modal>
     </div>
   );
 };

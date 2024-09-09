@@ -26,7 +26,6 @@ const ExpensesForm = () => {
 
   return (
     <div>
-      <h2>Add expense</h2>
       <Form name="basic" onFinish={addExpense} form={formExpense}>
         <Form.Item name="money" label="Value">
           <Input type="number" />
@@ -52,9 +51,11 @@ const ExpensesForm = () => {
             allowClear
           ></Select>
         </Form.Item>
-        <Button type="primary" htmlType="submit">
-          Add expense
-        </Button>
+        <div className="flex justify-end mt-9">
+          <Button type="primary" htmlType="submit" className="">
+            Add expense
+          </Button>
+        </div>
       </Form>
     </div>
   );
