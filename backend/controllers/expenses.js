@@ -43,14 +43,12 @@ router.post('/',tokenExtractor, async(req,res)=>{
 	})
 
 	if(asset){
-		// asset.value = asset.value - req.body.money
 		const expense = await Expense.create({
 			...req.body,
 			money: 0 - req.body.money,
 			assetId: req.body.assetId,
 			userId: user.id
 		})
-		// await asset.save()
 		res.json(expense)
 	}else{
 		return res.status(401).json({ error: 'This asset is not belong to this user' })
@@ -87,7 +85,7 @@ router.delete('/:id', tokenExtractor, async(req,res) =>{
 
 		res.status(204).end()
 	} else {
-		return res.status(403).json({error:'You are not authorized to delete this asset'})
+		return res.status(403).json({error:'You are not authorized to delete this expense'})
 	}
 })
 

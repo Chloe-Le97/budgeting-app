@@ -33,7 +33,16 @@ router.post('/', async (req, res) => {
 		passwordHash,
 	})
 	
-	await Asset.create({name:'Cash', userId: user.id})
+	const asset = await Asset.create({name:'Cash', userId: user.id})
+
+	await Expense.create({
+		category: 'initial balance',
+		money: 0,
+		assetId: asset.id,
+		userId: user.id,
+		isAssetUpdate: true
+	})
+	
     res.json(user)
 })
 
