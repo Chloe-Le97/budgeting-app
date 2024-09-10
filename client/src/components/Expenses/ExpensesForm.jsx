@@ -4,7 +4,7 @@ import React from 'react';
 import { useGetAsset } from '../Assets/assetDataProvider';
 import { useCreateExpenseMutation } from './expenseDataProvider';
 
-const ExpensesForm = () => {
+const ExpensesForm = ({ handleOk }) => {
   const [formExpense] = Form.useForm();
 
   const { data: dataAsset } = useGetAsset();
@@ -22,6 +22,7 @@ const ExpensesForm = () => {
     const assetId = values.asset;
     await createExpense({ money, text, category, assetId });
     formExpense.resetFields();
+    handleOk();
   };
 
   return (

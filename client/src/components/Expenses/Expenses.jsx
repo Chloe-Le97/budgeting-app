@@ -110,7 +110,6 @@ const Expenses = ({ user }) => {
   };
 
   const edit = (record) => {
-    console.log(record);
     editForm.setFieldsValue({
       value: '',
       description: '',
@@ -126,7 +125,6 @@ const Expenses = ({ user }) => {
   };
 
   const save = async (value) => {
-    console.log(editForm.getFieldValue());
     const formValue = editForm.getFieldValue();
     console.log(formValue);
     const newObject = {
@@ -293,24 +291,6 @@ const Expenses = ({ user }) => {
     };
   });
 
-  const tabItems = [
-    {
-      key: '1',
-      label: 'Expense',
-      children: <ExpensesForm />,
-    },
-    {
-      key: '2',
-      label: 'Income',
-      children: <IncomeForm />,
-    },
-    {
-      key: '3',
-      label: 'Transfer',
-      children: 'transfer form',
-    },
-  ];
-
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -322,6 +302,24 @@ const Expenses = ({ user }) => {
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+
+  const tabItems = [
+    {
+      key: '1',
+      label: 'Expense',
+      children: <ExpensesForm handleOk={handleOk} />,
+    },
+    {
+      key: '2',
+      label: 'Income',
+      children: <IncomeForm handleOk={handleOk} />,
+    },
+    {
+      key: '3',
+      label: 'Transfer',
+      children: 'transfer form',
+    },
+  ];
 
   return (
     <div>

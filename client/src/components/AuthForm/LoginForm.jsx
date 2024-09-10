@@ -16,6 +16,7 @@ const LoginForm = () => {
   const [username, setUsername] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
+  const [message, setMessage] = useState(null);
 
   const login = async (e) => {
     e.preventDefault();
@@ -25,29 +26,32 @@ const LoginForm = () => {
   };
 
   return (
-    <form onSubmit={login}>
-      <div>
-        Username
-        <Input
-          type="text"
-          value={username}
-          name="Username"
-          onChange={({ target }) => setUsername(target.value)}
-        />
-      </div>
-      <div>
-        Password
-        <Input
-          type="password"
-          value={password}
-          name="Password"
-          onChange={({ target }) => setPassword(target.value)}
-        />
-      </div>
-      <Button type="primary" htmlType="submit">
-        Login
-      </Button>
-    </form>
+    <div>
+      <div>{message}</div>
+      <form onSubmit={login}>
+        <div>
+          Username
+          <Input
+            type="text"
+            value={username}
+            name="Username"
+            onChange={({ target }) => setUsername(target.value)}
+          />
+        </div>
+        <div>
+          Password
+          <Input
+            type="password"
+            value={password}
+            name="Password"
+            onChange={({ target }) => setPassword(target.value)}
+          />
+        </div>
+        <Button type="primary" htmlType="submit">
+          Login
+        </Button>
+      </form>
+    </div>
   );
 };
 
