@@ -15,6 +15,7 @@ import React, { useState } from 'react';
 import { useGetAsset } from '../Assets/assetDataProvider';
 import ExpensesForm from './ExpensesForm';
 import IncomeForm from './IncomeForm';
+import TransferForm from './TransferForm';
 import {
   useCreateExpenseMutation,
   useGetExpense,
@@ -31,7 +32,6 @@ const Expenses = ({ user }) => {
   const { data } = useGetExpense();
   const { data: dataAsset } = useGetAsset();
 
-  const { createExpense } = useCreateExpenseMutation();
   const { updateExpense } = useUpdateExpenseMutation();
   const { removeExpense } = useRemoveExpenseMutation();
 
@@ -229,29 +229,32 @@ const Expenses = ({ user }) => {
       dataIndex: 'edit',
       width: '5%',
       render: (_, value) => {
+        // console.log(value);
         const editable = isEditing(value);
-        return editable ? (
-          <span>
+        if (value.category !== 'Transfer') {
+          return editable ? (
+            <span>
+              <Typography.Link
+                onClick={() => save(value)}
+                style={{
+                  marginInlineEnd: 8,
+                }}
+              >
+                Save
+              </Typography.Link>
+              <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
+                <a>Cancel</a>
+              </Popconfirm>
+            </span>
+          ) : (
             <Typography.Link
-              onClick={() => save(value)}
-              style={{
-                marginInlineEnd: 8,
-              }}
+              disabled={editingKey !== ''}
+              onClick={() => edit(value)}
             >
-              Save
+              Edit
             </Typography.Link>
-            <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
-              <a>Cancel</a>
-            </Popconfirm>
-          </span>
-        ) : (
-          <Typography.Link
-            disabled={editingKey !== ''}
-            onClick={() => edit(value)}
-          >
-            Edit
-          </Typography.Link>
-        );
+          );
+        }
       },
     },
     {
@@ -259,18 +262,20 @@ const Expenses = ({ user }) => {
       dataIndex: 'delete',
       width: '5%',
       render: (_, value) => {
-        return (
-          <Popconfirm
-            title="Delete the expense"
-            description="Are you sure to delete this expense?"
-            onConfirm={() => delExpense(value.key)}
-            // onCancel={cancel}
-            okText="Yes"
-            cancelText="No"
-          >
-            <Button danger>Delete</Button>
-          </Popconfirm>
-        );
+        if (value.category !== 'Transfer') {
+          return (
+            <Popconfirm
+              title="Delete the expense"
+              description="Are you sure to delete this expense?"
+              onConfirm={() => delExpense(value.key)}
+              // onCancel={cancel}
+              okText="Yes"
+              cancelText="No"
+            >
+              <Button danger>Delete</Button>
+            </Popconfirm>
+          );
+        }
       },
     },
   ];
@@ -317,7 +322,7 @@ const Expenses = ({ user }) => {
     {
       key: '3',
       label: 'Transfer',
-      children: 'transfer form',
+      children: <TransferForm handleOk={handleOk} />,
     },
   ];
 
@@ -345,9 +350,6 @@ const Expenses = ({ user }) => {
           </div>
         )}
       </div>
-      {/* <ExpensesForm />
-      <IncomeForm /> */}
-
       <Button type="primary" onClick={showModal} className="modal-button">
         +
       </Button>
