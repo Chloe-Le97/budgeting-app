@@ -27,12 +27,10 @@ router.get('/', tokenExtractor ,async (req, res) => {
 			userId: user.id
 		}
 	})
-	console.log(JSON.stringify(expenses, null, 2))
 	res.json(expenses.filter(item => item.isAssetUpdate == false))
 })
 
 router.post('/',tokenExtractor, async(req,res)=>{
-	console.log(req.body)
 	const user = await User.findByPk(req.decodedToken.id)
 
 	const asset = await Asset.findOne({
@@ -57,7 +55,6 @@ router.post('/',tokenExtractor, async(req,res)=>{
 })
 
 router.put('/:id',tokenExtractor, async(req,res)=>{
-	// console.log(req.body)
 	const user = await User.findByPk(req.decodedToken.id)
 	const expense = await Expense.findByPk(req.params.id)
 

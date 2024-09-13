@@ -2,7 +2,7 @@ import { Button, Form, Input } from 'antd';
 
 import { useCreateAssetMutation } from './assetDataProvider';
 
-const AssetForm = () => {
+const AssetForm = ({ handleOk }) => {
   const [form] = Form.useForm();
 
   const { createAsset } = useCreateAssetMutation();
@@ -10,8 +10,9 @@ const AssetForm = () => {
   const addAsset = async (values) => {
     const name = values.name;
     const value = values.value;
-    createAsset({ name, value });
+    await createAsset({ name, value });
     form.resetFields();
+    handleOk();
   };
 
   return (

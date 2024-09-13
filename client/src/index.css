@@ -22,3 +22,7 @@ body {
 .ant-tabs-nav{
     margin-bottom: 32px !important;
 }
+
+.ant-table-row{
+   height: 65px !important;
+}

@@ -226,7 +226,7 @@ const Assets = () => {
         onCancel={handleCancel}
         footer=""
       >
-        <AssetForm />
+        <AssetForm handleOk={handleOk} />
       </Modal>
     </div>
   );
