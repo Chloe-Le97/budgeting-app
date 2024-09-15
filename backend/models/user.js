@@ -22,6 +22,10 @@ User.init({
   passwordHash :{
 	type: DataTypes.STRING,
 	allowNull : false
+  },
+  monthlyBudget:{
+    type: DataTypes.INTEGER,
+    allowNull: true
   }
 }, {
   sequelize,

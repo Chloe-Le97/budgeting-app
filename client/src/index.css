@@ -26,3 +26,53 @@ body {
 .ant-table-row{
    height: 65px !important;
 }
+
+/* Container for dropdown */
+.custom-dropdown {
+    border-radius: 8px;
+    background-color: transparent;
+}
+
+.custom-dropdown .ant-dropdown-menu-item{
+    padding: 5px 0 !important;
+}
+  
+  /* Budget Link Style */
+  .dropdown-link {
+    color: #722ED1 !important;
+    font-size: 14px;
+    padding: 8px 12px;
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    border: 1px solid #722ED1;
+    border-radius: 4px;
+    transition: all 0.3s;
+  }
+  
+  .dropdown-link:hover {
+    background-color: #722ED1;
+    color: white !important;
+  }
+  
+  /* Logout Button Style */
+  .logout-button {
+    background-color: #ff4d4f;
+    border-radius: 4px;
+    width: 100%;
+    font-weight: 500;
+    margin-top: 12px;
+  }
+  
+  .logout-button:hover {
+    background-color: #ff7875;
+  }
+
+  .budget-remain{
+    font-size: 19px;
+    font-weight: 500;
+  }
+
+  .budget-month{
+    font-size: 19px;
+  }
