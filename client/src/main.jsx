@@ -9,6 +9,7 @@ import App from './App';
 import Assets from './components/Assets/Assets';
 import SignUpForm from './components/AuthForm/SignUpForm';
 import AuthProvider from './components/AuthProvider/AuthProvider';
+import Budget from './components/Budget/Budget';
 import NavigationMenu from './components/NavigationMenu/NavigationMenu';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import './index.css';
@@ -40,6 +41,16 @@ const router = createBrowserRouter([
       <ProtectedRoute>
         <Layout>
           <Assets />
+        </Layout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/budget',
+    element: (
+      <ProtectedRoute>
+        <Layout>
+          <Budget />
         </Layout>
       </ProtectedRoute>
     ),

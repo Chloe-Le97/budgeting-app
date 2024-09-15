@@ -30,6 +30,25 @@ const NavigationMenu = () => {
   const { currentUser, handleLogout } = useAuth();
   const location = useLocation();
 
+  const menuDropdownItems = [
+    {
+      label: (
+        <Link to="/budget" className="dropdown-link">
+          Budget
+        </Link>
+      ),
+      key: 'budget',
+    },
+    {
+      label: (
+        <Button danger onClick={handleLogout} type="primary" className="w-full">
+          Logout
+        </Button>
+      ),
+      key: 'logout',
+    },
+  ];
+
   return (
     <div className="flex justify-between items-center mb-6">
       <div className="flex-1 pe-10">
@@ -49,16 +68,9 @@ const NavigationMenu = () => {
       </div>
       {currentUser !== null ? (
         <Dropdown
-          dropdownRender={() => (
-            <Button
-              danger
-              onClick={handleLogout}
-              type="primary"
-              className="w-full"
-            >
-              Logout
-            </Button>
-          )}
+          menu={{ items: menuDropdownItems }}
+          overlayClassName="custom-dropdown"
+          trigger={['hover']}
         >
           <a onClick={(e) => e.preventDefault()}>
             Welcome, <span className="font-bold">{currentUser?.username}</span>

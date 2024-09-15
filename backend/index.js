@@ -13,6 +13,7 @@ const assetsRouter = require('./controllers/assets')
 const expensesRouter = require('./controllers/expenses')
 const incomeRouter = require('./controllers/income')
 const transferRouter = require('./controllers/transfer')
+const budgetRouter = require('./controllers/budget')
 
 app.use(express.json())
 
@@ -22,6 +23,7 @@ app.use('/api/assets', assetsRouter)
 app.use('/api/expenses', expensesRouter)
 app.use('/api/income', incomeRouter)
 app.use('/api/transfer', transferRouter)
+app.use('/api/budget', budgetRouter)
 
 const start = async () => {
   await connectToDatabase()
