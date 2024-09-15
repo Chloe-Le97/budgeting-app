@@ -1,17 +1,17 @@
-import { Button, Input } from 'antd';
+import { Button, Input, Form } from 'antd';
 import React, { useState } from 'react';
 
 import userService from '../../services/users';
 
 const SignUpForm = () => {
+  const [form] = Form.useForm();
+
   const [username, setUsername] = useState('');
   const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState(null);
 
-  const handleSignUp = async (event) => {
-    event.preventDefault();
-
+  const handleSignUp = async () => {
     try {
       await userService.signup({
         username,
@@ -24,6 +24,7 @@ const SignUpForm = () => {
       setTimeout(() => {
         setMessage(null);
       }, 5000);
+      form.resetFields()
     } catch (exception) {
       setMessage('Something wrong');
       setTimeout(() => {
@@ -34,39 +35,36 @@ const SignUpForm = () => {
 
   return (
     <div>
-      <div>{message}</div>
-      <form onSubmit={handleSignUp}>
-        <div>
-          Username
+      {message !== null ? (<div className="py-6">{message}</div>) :(<></>)}
+      <Form name="basic" onFinish={handleSignUp} form={form}>        
+          <Form.Item name="username" label="Username">
           <Input
             type="text"
             value={username}
             name="Username"
             onChange={({ target }) => setUsername(target.value)}
           />
-        </div>
-        <div>
-          Name
+          </Form.Item>
+          <Form.Item name="name" label="Name">
           <Input
             type="text"
             value={name}
-            name="Username"
+            name="Name"
             onChange={({ target }) => setName(target.value)}
           />
-        </div>
-        <div>
-          Password
+          </Form.Item>
+        <Form.Item name="password" label="Password">
           <Input
             type="password"
             value={password}
             name="Password"
             onChange={({ target }) => setPassword(target.value)}
           />
-        </div>
+          </Form.Item>
         <Button type="primary" htmlType="submit">
           Sign up
         </Button>
-      </form>
+      </Form>
     </div>
   );
 };

@@ -1,56 +1,50 @@
-import { Button, Input } from 'antd';
+import { Button, Input, Form } from 'antd';
 import React, { useState } from 'react';
 
 import { useAuth } from '../AuthProvider/AuthProvider';
 
 const LoginForm = () => {
+  const [form] = Form.useForm();
   const {
-    authToken,
-    setAuthToken,
-    currentUser,
-    setCurrentUser,
     handleLogin,
-    handleLogout,
   } = useAuth();
 
   const [username, setUsername] = useState('');
-  const [name, setName] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState(null);
 
-  const login = async (e) => {
-    e.preventDefault();
+  const login = async () => {
     await handleLogin(username, password);
     setUsername('');
     setPassword('');
+    form.resetFields()
   };
 
   return (
     <div>
       <div>{message}</div>
-      <form onSubmit={login}>
-        <div>
-          Username
-          <Input
-            type="text"
-            value={username}
-            name="Username"
-            onChange={({ target }) => setUsername(target.value)}
-          />
-        </div>
-        <div>
-          Password
+      <Form name="basic" onFinish={login} form={form}>
+        <Form.Item name="name" label="Username">
+        <Input
+          type="text"
+          value={username}
+          name="Username"
+          onChange={({ target }) => setUsername(target.value)}
+        />
+        </Form.Item>
+
+        <Form.Item name="password" label="Password">
           <Input
             type="password"
             value={password}
             name="Password"
             onChange={({ target }) => setPassword(target.value)}
           />
-        </div>
+        </Form.Item>
         <Button type="primary" htmlType="submit">
           Login
         </Button>
-      </form>
+      </Form>
     </div>
   );
 };
