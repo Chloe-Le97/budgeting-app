@@ -31,16 +31,17 @@ const tokenExtractor = (req, res, next) => {
 		attributes: [
 		  "asset_id",
 		  [sequelize.fn("sum", sequelize.col("money")), "total_money"],
+		//   [sequelize.fn('COALESCE', sequelize.fn('sum', sequelize.col('money')), 0), 'total_money'],
 		],
 		group: ["asset_id"],
 	  });
 
 	  console.log(JSON.stringify(assetSum, null, 2))
-	  const assetsIdArray = R.map(R.path(['dataValues','asset_id']), assetSum)
-	  
+	//   const assetsIdArray = R.map(R.path(['dataValues','asset_id']), assetSum)
+
 	  const assets = await Asset.findAll({
 		where:{
-			id: assetsIdArray
+			userId: user.id
 		},
 		attributes:[
 			"name", ["id", "asset_id"]
@@ -60,15 +61,19 @@ const tokenExtractor = (req, res, next) => {
 			if (combinedMap.has(item.dataValues.asset_id)) {
 				// Merge existing object dataValues with new dataValues
 				let existingObject = combinedMap.get(item.dataValues.asset_id);
-				combinedMap.set(item.dataValues.asset_id, { ...existingObject, ...item.dataValues });
+				combinedMap.set(item.dataValues.asset_id, { total_money:0,...existingObject, ...item.dataValues });
+				
 			} else {
-				combinedMap.set(item.dataValues.asset_id, { ...item.dataValues });
+				combinedMap.set(item.dataValues.asset_id, { total_money:0,...item.dataValues });
+				console.log(combinedMap)
 			}
 		});
 
 	// Convert the map back to an array
 	let combinedArray = Array.from(combinedMap.values());
 
+	console.log(combinedArray)
+	
 	res.json(combinedArray)
   })
 

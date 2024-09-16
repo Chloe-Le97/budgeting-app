@@ -31,11 +31,18 @@ Expense.init({
 		allowNull: false,
 		references: { model: 'assets', key: 'id' },
 	},
+  categoryId:{
+    type: DataTypes.INTEGER,
+    // allowNull: false,
+    references: { model: 'categories', key: 'id' },
+  },
   isAssetUpdate:{
     type: DataTypes.BOOLEAN,
     defaultValue: 'false',
     allowNull: false,
-  }
+  },
+  updatedAt: { type: DataTypes.DATE, defaultValue: sequelize.literal("(now() at time zone 'utc')") },
+  createdAt: { type: DataTypes.DATE, defaultValue: sequelize.literal("(now() at time zone 'utc')") },
 }, {
   sequelize,
   underscored: true,
