@@ -66,7 +66,6 @@ const Assets = () => {
   };
 
   const edit = (record) => {
-    console.log(record);
     editForm.setFieldsValue({
       total_money: '',
       name: '',
@@ -81,8 +80,6 @@ const Assets = () => {
 
   const save = async (value) => {
     const formValue = editForm.getFieldValue();
-    console.log(formValue);
-    console.log(value);
     const newObject = {
       name: formValue.name,
       differentValue: formValue.total_money - value.total_money,

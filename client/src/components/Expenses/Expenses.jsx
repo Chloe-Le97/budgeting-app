@@ -124,9 +124,8 @@ const Expenses = ({ user }) => {
     setEditingKey('');
   };
 
-  const save = async (value) => {
+  const save = async () => {
     const formValue = editForm.getFieldValue();
-    console.log(formValue);
     const newObject = {
       money: formValue.value,
       text: formValue.description,

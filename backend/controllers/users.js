@@ -19,45 +19,49 @@ const tokenExtractor = (req, res, next) => {
 	next()
   }
 
-router.post('/', async (req, res) => {
+router.post('/', async (req, res, next) => {
 	const { username, name, password } = req.body
 
-	console.log(req.body)
-	
 	const saltRounds = 10
 	const passwordHash = await bcrypt.hash(password, saltRounds)
 
-    const user = await User.create({
-		username,
-		name,
-		passwordHash,
-	})
+	try{
+		const user = await User.create({
+			username,
+			name,
+			passwordHash,
+		})
+		
+		const asset = await Asset.create({name:'Cash', userId: user.id})
 	
-	const asset = await Asset.create({name:'Cash', userId: user.id})
-
-	await Expense.create({
-		category: 'initial balance',
-		money: 0,
-		assetId: asset.id,
-		userId: user.id,
-		isAssetUpdate: true
-	})
-	
-    res.json(user)
+		await Expense.create({
+			category: 'initial balance',
+			money: 0,
+			assetId: asset.id,
+			userId: user.id,
+			isAssetUpdate: true
+		})
+		
+		res.json(user)
+	}catch(error){
+		next(error)
+	}
 })
 
-router.put('/:username', tokenExtractor ,async(req,res) =>{
+router.put('/:username', tokenExtractor ,async(req,res, next) =>{
 	const {username} = req.body
-
-	console.log(username)
 
 	const userChange = await User.findOne({where:{username : req.params.username}});
 	const currentUser = await User.findByPk(req.decodedToken.id)
 
 	if(userChange.id === currentUser.id){
-		currentUser.username = username
-		const user = await currentUser.save()
-		res.json(user)
+		try{
+			currentUser.username = username
+			const user = await currentUser.save()
+			res.json(user)
+		}catch(error){
+			next(error)
+		}
 	}else{
 		return res.status(403).json({ error: 'You are not authorized to change this username' });
 	}

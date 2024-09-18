@@ -19,10 +19,11 @@ const tokenExtractor = (req, res, next) => {
 	next()
 }
 
-router.post('/',tokenExtractor, async(req,res)=>{
+router.post('/',tokenExtractor, async(req,res, next)=>{
     const value = req.body.value
 
     const user = await User.findByPk(req.decodedToken.id)
+
 
 	const assetTransferFrom = await Asset.findOne({
 		where: {
@@ -39,22 +40,26 @@ router.post('/',tokenExtractor, async(req,res)=>{
 	})
 
     if(assetTransferFrom && assetTransferTo){
-        await Expense.create({
-			category: 'Transfer',
-            text : 'Transfer money',
-			money: 0 - value,
-			assetId: assetTransferFrom.id,
-			userId: user.id,
-		})
-        await Expense.create({
-			category: 'Transfer',
-			money: value,
-			assetId: assetTransferTo.id,
-			userId: user.id,
-            text : 'Receive money'
-		})
-
-        res.status(200).json({ message: "Success!" });
+		try{
+			await Expense.create({
+				category: 'Transfer',
+				text : 'Transfer money',
+				money: 0 - value,
+				assetId: assetTransferFrom.id,
+				userId: user.id,
+			})
+			await Expense.create({
+				category: 'Transfer',
+				money: value,
+				assetId: assetTransferTo.id,
+				userId: user.id,
+				text : 'Receive money'
+			})
+	
+			res.status(200).json({ message: "Success!" });
+		}catch(error){
+			next(error)
+		}      
     }else{
         return res.status(401).json({ error: 'This asset is not belong to this user' })
     }

@@ -22,33 +22,30 @@ const tokenExtractor = (req, res, next) => {
   }
 
 
-  router.get('/', tokenExtractor ,async (req, res) => {
+  router.get('/', tokenExtractor ,async (req, res, next) => {
 	const user = await User.findByPk(req.decodedToken.id)
-	const assetSum = await Expense.findAll({
-		where: {
-			userId: user.id
-		},
-		attributes: [
-		  "asset_id",
-		  [sequelize.fn("sum", sequelize.col("money")), "total_money"],
-		//   [sequelize.fn('COALESCE', sequelize.fn('sum', sequelize.col('money')), 0), 'total_money'],
-		],
-		group: ["asset_id"],
-	  });
+	try{
+		const assetSum = await Expense.findAll({
+			where: {
+				userId: user.id
+			},
+			attributes: [
+			  "asset_id",
+			  [sequelize.fn("sum", sequelize.col("money")), "total_money"],
+			//   [sequelize.fn('COALESCE', sequelize.fn('sum', sequelize.col('money')), 0), 'total_money'],
+			],
+			group: ["asset_id"],
+		  });
+		  const assets = await Asset.findAll({
+			where:{
+				userId: user.id
+			},
+			attributes:[
+				"name", ["id", "asset_id"]
+			]
+		  })
 
-	  console.log(JSON.stringify(assetSum, null, 2))
-	//   const assetsIdArray = R.map(R.path(['dataValues','asset_id']), assetSum)
-
-	  const assets = await Asset.findAll({
-		where:{
-			userId: user.id
-		},
-		attributes:[
-			"name", ["id", "asset_id"]
-		]
-	  })
-	  
-	  // Create a map to combine objects by asset_id
+		   // Create a map to combine objects by asset_id
 		let combinedMap = new Map();
 
 		// Process first array
@@ -65,71 +62,83 @@ const tokenExtractor = (req, res, next) => {
 				
 			} else {
 				combinedMap.set(item.dataValues.asset_id, { total_money:0,...item.dataValues });
-				console.log(combinedMap)
 			}
 		});
 
-	// Convert the map back to an array
-	let combinedArray = Array.from(combinedMap.values());
+		// Convert the map back to an array
+		let combinedArray = Array.from(combinedMap.values());
+		
+		res.json(combinedArray)
+	}catch(error){
+		next(error)
+	}
+	 
+  })
 
-	console.log(combinedArray)
+  router.post('/',tokenExtractor, async(req,res, next)=>{
+	try{
+		const user = await User.findByPk(req.decodedToken.id)
+		const asset = await Asset.create({
+			name: req.body.name,
+			userId: user.id
+		})
 	
-	res.json(combinedArray)
+		await Expense.create({
+			category: 'initial balance',
+			money: req.body.value,
+			assetId: asset.id,
+			userId: user.id,
+			isAssetUpdate: true
+		})
+	
+		res.json(asset)
+	}catch(error){
+		next(error)
+	}
   })
 
-  router.post('/',tokenExtractor, async(req,res)=>{
-	console.log(req.body)
-	const user = await User.findByPk(req.decodedToken.id)
-	const asset = await Asset.create({
-		name: req.body.name,
-		userId: user.id
-	})
-
-	await Expense.create({
-		category: 'initial balance',
-		money: req.body.value,
-		assetId: asset.id,
-		userId: user.id,
-		isAssetUpdate: true
-	})
-
-	res.json(asset)
-  })
-
-  router.put('/:id',tokenExtractor, async(req,res)=>{
+  router.put('/:id',tokenExtractor, async(req,res, next)=>{
 	const user = await User.findByPk(req.decodedToken.id)
 	const asset = await Asset.findByPk(req.params.id)
 	
 	asset.name = req.body.name
 
 	if(asset.userId === user.id){
-		const updateAsset = await Expense.create({
-			category: 'update balance',
-			money: req.body.differentValue,
-			assetId: asset.id,
-			userId: user.id,
-			isAssetUpdate: true
-		})
-		await asset.save()
-
-		const returnedAsset = {
-			asset_id: asset.id,
-			name : asset.name,
-			total_money:  updateAsset.money
+		try{
+			const updateAsset = await Expense.create({
+				category: 'update balance',
+				money: req.body.differentValue,
+				assetId: asset.id,
+				userId: user.id,
+				isAssetUpdate: true
+			})
+			await asset.save()
+	
+			const returnedAsset = {
+				asset_id: asset.id,
+				name : asset.name,
+				total_money:  updateAsset.money
+			}
+			return res.json(returnedAsset)
+		}catch(error){
+			next(error)
 		}
-		return res.json(returnedAsset)
 	}
 	else{
 		return res.status(403).json({ error: 'You are not authorized to edit this asset' });
 	} 
   })
 
-  router.delete('/:id', tokenExtractor, async(req,res) =>{
+  router.delete('/:id', tokenExtractor, async(req,res, next) =>{
 	const user = await User.findByPk(req.decodedToken.id)
 	const asset = await Asset.findByPk(req.params.id)
 	if(asset.userId === user.id){
-		await asset.destroy()
-		res.status(204).end()
+		try{
+			await asset.destroy()
+			res.status(204).end()
+		}catch(error){
+			next(error)
+		}
 	} else {
 		return res.status(403).json({error:'You are not authorized to delete this asset'})
 	}

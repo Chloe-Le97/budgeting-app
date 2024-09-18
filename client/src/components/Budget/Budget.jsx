@@ -49,8 +49,6 @@ const Budget = () => {
     setIsModalOpen(false);
   };
 
-  console.log(dataExpense);
-
   // Calculate total expenses for the current month
   const currentMonthExpenses = dataExpense
     ?.filter((expense) => {

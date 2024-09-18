@@ -20,8 +20,7 @@ const tokenExtractor = (req, res, next) => {
 }
 
 
-router.post('/',tokenExtractor, async(req,res)=>{
-	console.log(req.body)
+router.post('/',tokenExtractor, async(req,res, next)=>{
 	const user = await User.findByPk(req.decodedToken.id)
 
 	const asset = await Asset.findOne({
@@ -32,13 +31,17 @@ router.post('/',tokenExtractor, async(req,res)=>{
 	})
 
 	if(asset){
-		const income = await Expense.create({
-			...req.body,
-			money: req.body.money,
-			assetId: req.body.assetId,
-			userId: user.id
-		})
-		return res.json(income)
+		try{
+			const income = await Expense.create({
+				...req.body,
+				money: req.body.money,
+				assetId: req.body.assetId,
+				userId: user.id
+			})
+			return res.json(income)
+		}catch(error){
+			next(error)
+		}
 	}else{
 		return res.status(401).json({ error: 'This asset is not belong to this user' })
 	}

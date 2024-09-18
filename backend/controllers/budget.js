@@ -20,45 +20,60 @@ const tokenExtractor = (req, res, next) => {
 }
 
 
-router.get('/', tokenExtractor ,async (req, res) => {
-	const user = await User.findByPk(req.decodedToken.id)
+router.get('/', tokenExtractor ,async (req, res, next) => {
+
+	try{
+		const user = await User.findByPk(req.decodedToken.id)
 	
-	res.json({
-		userId : user.id,
-		monthlyBudget : user.monthlyBudget
-	})
+		res.json({
+			userId : user.id,
+			monthlyBudget : user.monthlyBudget
+		})
+	}
+	catch(error){
+		next(error)
+	}
 })
 
-router.post('/',tokenExtractor, async(req,res)=>{
+router.post('/',tokenExtractor, async(req,res, next)=>{
 	const user = await User.findByPk(req.decodedToken.id)
 
 	if(user){
 		user.monthlyBudget = req.body.budget
 
-		await user.save()
+		try{
+			await user.save()
 
-		res.json({
-			user : user.id,
-			monthlyBudget : user.monthlyBudget
-		})
+			res.json({
+				user : user.id,
+				monthlyBudget : user.monthlyBudget
+			})
+		}catch(error){
+			next(error)
+		}
+		
 	}else{
 		return res.status(403).json({ error: 'You are not authorized to add this budget' });
 	} 
 
 })
 
-router.put('/',tokenExtractor, async(req,res)=>{
+router.put('/',tokenExtractor, async(req,res, next)=>{
 	const user = await User.findByPk(req.decodedToken.id)
 
 	if(user){
 		user.monthlyBudget = req.body.budget
 	
-		await user.save()
+		try{
+			await user.save()
 
-		res.json({
-			user : user.id,
-			monthlyBudget : user.monthlyBudget
-		})
+			res.json({
+				user : user.id,
+				monthlyBudget : user.monthlyBudget
+			})
+		}catch(error){
+			next(error)
+		}
 	}
 	else{
 		return res.status(403).json({ error: 'You are not authorized to edit this budget' });
