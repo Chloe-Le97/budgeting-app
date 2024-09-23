@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken')
 const { SECRET } = require('../util/config')
 const { Op } = require('sequelize')
 
-const { Expense, Asset, User, Category } = require('../models')
+const { User, Category } = require('../models')
 
 const tokenExtractor = (req, res, next) => {
 	const authorization = req.get('authorization')
@@ -49,6 +49,7 @@ router.put('/:id',tokenExtractor, async(req,res, next)=>{
     if(category.userId === user.id){
         category.name = req.body.name
         category.icon = req.body.icon
+        category.type = req.body.type
 
         try{
             await category.save()

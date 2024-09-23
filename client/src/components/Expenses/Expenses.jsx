@@ -1,18 +1,11 @@
-import {
-  Button,
-  Form,
-  Input,
-  Modal,
-  Popconfirm,
-  Select,
-  Table,
-  Tabs,
-  Typography,
-} from 'antd';
+import { Button, List, Modal, Tabs, Typography } from 'antd';
 import * as R from 'ramda';
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
+import category from '../../services/category';
+import { iconObject } from '../../utils/iconMapping';
 import { useGetAsset } from '../Assets/assetDataProvider';
+import { useGetCategory } from '../Category/categoryDataProvider';
 import ExpensesForm from './ExpensesForm';
 import IncomeForm from './IncomeForm';
 import TransferForm from './TransferForm';
@@ -23,277 +16,103 @@ import {
   useUpdateExpenseMutation,
 } from './expenseDataProvider';
 
-const Expenses = ({ user }) => {
-  const [editForm] = Form.useForm();
-  const [editingKey, setEditingKey] = useState('');
+const Expenses = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const isEditing = (record) => record.key === editingKey;
 
   const { data } = useGetExpense();
   const { data: dataAsset } = useGetAsset();
+  const { data: dataCategory } = useGetCategory();
 
   const { updateExpense } = useUpdateExpenseMutation();
   const { removeExpense } = useRemoveExpenseMutation();
 
-  const optionsEdit = dataAsset?.map((asset) => ({
-    value: asset.asset_id,
-    label: asset.name,
-  }));
-
   const getDate = (expense) =>
     new Date(expense.createdAt).toISOString().split('T')[0];
 
-  let groupedExpenses;
-  let dataTable = [];
-  if (data) {
-    groupedExpenses = R.groupBy(getDate, data);
-    const sortedData = Object.fromEntries(
-      Object.entries(groupedExpenses).sort(
-        (a, b) => new Date(b[0]) - new Date(a[0]),
-      ),
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
+  const sortedData = useMemo(() => {
+    if (!data) return null;
+
+    console.log(data);
+
+    // Step 1: Group expenses by transactionId
+    const groupedByTransaction = R.groupBy(
+      (expense) => expense.transactionId,
+      data,
     );
 
-    Object.entries(sortedData).map(([date, expenses]) => {
-      expenses.map((expense) =>
-        dataTable.push({
-          key: expense.id,
-          date: date,
-          category: expense.category,
-          description: expense.text,
-          value: expense.money,
-          asset: expense.assetId,
-        }),
-      );
-    });
-  }
-
-  const EditableCell = ({
-    editing,
-    dataIndex,
-    title,
-    inputType,
-    record,
-    index,
-    children,
-    ...restProps
-  }) => {
-    const inputNode = <Input />;
-    const selectNode = (
-      <Select
-        placeholder="Select an asset"
-        options={optionsEdit}
-        allowClear
-      ></Select>
+    // Step 2: Combine expenses with the same transactionId
+    const combinedExpenses = Object.values(groupedByTransaction).map(
+      (group) => {
+        if (group.length === 1) {
+          return group[0];
+        }
+        const [transfer, receive] = group.sort((a, b) => a.money - b.money);
+        return {
+          id: transfer.id,
+          transferAmount: receive.money,
+          assetIdTransfer: transfer.assetId,
+          assetIdReceived: receive.assetId,
+          createdAt: transfer.createdAt,
+          category: 'Transfer',
+        };
+      },
     );
-    return (
-      <td {...restProps}>
-        {editing ? (
-          <Form.Item
-            name={dataIndex}
-            style={{
-              margin: 0,
-            }}
-            rules={[
-              {
-                required: true,
-                message: `Please Input ${title}!`,
-              },
-            ]}
-          >
-            {dataIndex == 'asset' ? selectNode : inputNode}
-          </Form.Item>
-        ) : (
-          children
-        )}
-      </td>
+
+    // Step 3: Group combined expenses by date
+    const groupedByDate = R.groupBy(getDate, combinedExpenses);
+
+    // Step 4: Sort grouped expenses by date (descending) and format date
+    return Object.fromEntries(
+      Object.entries(groupedByDate)
+        .sort((a, b) => new Date(b[0]).getTime() - new Date(a[0]).getTime())
+        .map(([date, expenses]) => [formatDate(date), expenses]),
     );
+  }, [data]);
+
+  const getTotalMoneyByDate = (obj) => {
+    // Does not calculate the transfer transaction
+    const total = obj
+      .filter((item) => item.category !== 'Transfer')
+      .reduce((total, expense) => total + expense.money, 0);
+    console.log(obj.filter((item) => item.category !== 'Transfer'));
+    return total;
   };
 
-  const edit = (record) => {
-    editForm.setFieldsValue({
-      value: '',
-      description: '',
-      category: '',
-      asset: '',
-      ...record,
-    });
-    setEditingKey(record.key);
+  const getCategoryIcon = (categoryId) => {
+    const categoryIcon = dataCategory?.find(
+      (category) => category.id === categoryId,
+    );
+
+    if (categoryIcon) {
+      return categoryIcon.icon;
+    }
   };
 
-  const cancel = () => {
-    setEditingKey('');
+  const getAssetName = (assetId) => {
+    const asset = dataAsset?.find((item) => item.asset_id === assetId);
+
+    if (asset) {
+      return asset.name;
+    }
   };
 
-  const save = async () => {
-    const formValue = editForm.getFieldValue();
-    const newObject = {
-      money: formValue.value,
-      text: formValue.description,
-      category: formValue.category,
-      assetId: formValue.asset,
-    };
-    await updateExpense({ id: formValue.key, data: newObject });
-    setEditingKey('');
-  };
+  console.log(sortedData);
 
   const delExpense = async (id) => {
     await removeExpense({ id });
   };
 
-  const getCountByDate = (date, obj) => {
-    return obj[date] ? obj[date].length : 0;
+  const edit = async (value) => {
+    console.log(value);
   };
-
-  const getTotalMoneyByDate = (date, obj) => {
-    if (!obj[date]) return 0;
-
-    return obj[date].reduce((total, expense) => total + expense.money, 0);
-  };
-  let sameKeyValue;
-
-  const columns = [
-    {
-      title: () => {
-        return <div className="text-center">Date</div>;
-      },
-      width: '18%',
-      dataIndex: 'date',
-      onCell: (record, index) => {
-        if (record.date !== sameKeyValue) {
-          const count = getCountByDate(record.date, groupedExpenses);
-
-          sameKeyValue = record.date;
-
-          return {
-            rowSpan: count,
-          };
-        }
-        return {
-          rowSpan: 0,
-        };
-      },
-      render: (date) => {
-        const totalMoney = getTotalMoneyByDate(date, groupedExpenses);
-        const dateStr = new Date(date);
-        const dateText = dateStr.toLocaleDateString('en-GB', {
-          day: 'numeric',
-          month: 'short',
-          year: 'numeric',
-        });
-        return (
-          <div className="text-center">
-            <div className="font-bold mb-3">{dateText}</div>
-            <div>{totalMoney} €</div>
-          </div>
-        );
-      },
-    },
-    {
-      title: 'Asset',
-      dataIndex: 'asset',
-      width: '15%',
-      editable: true,
-      render: (value) => {
-        const assetColumn = dataAsset?.find(
-          (asset) => asset.asset_id === value,
-        );
-        return <div>{assetColumn?.name}</div>;
-      },
-    },
-    {
-      title: 'Category',
-      dataIndex: 'category',
-      width: '10%',
-      editable: true,
-    },
-    {
-      title: 'Description',
-      dataIndex: 'description',
-      editable: true,
-    },
-    {
-      title: 'Value',
-      dataIndex: 'value',
-      width: '10%',
-      editable: true,
-      render: (value) => {
-        if (value > 0) {
-          return <div className="text-purple-700">+{value} €</div>;
-        }
-        return <div>{value} €</div>;
-      },
-    },
-    {
-      title: 'Edit',
-      dataIndex: 'edit',
-      width: '5%',
-      render: (_, value) => {
-        // console.log(value);
-        const editable = isEditing(value);
-        if (value.category !== 'Transfer') {
-          return editable ? (
-            <span>
-              <Typography.Link
-                onClick={() => save(value)}
-                style={{
-                  marginInlineEnd: 8,
-                }}
-              >
-                Save
-              </Typography.Link>
-              <Popconfirm title="Sure to cancel?" onConfirm={cancel}>
-                <a>Cancel</a>
-              </Popconfirm>
-            </span>
-          ) : (
-            <Typography.Link
-              disabled={editingKey !== ''}
-              onClick={() => edit(value)}
-            >
-              Edit
-            </Typography.Link>
-          );
-        }
-      },
-    },
-    {
-      title: 'Delete',
-      dataIndex: 'delete',
-      width: '5%',
-      render: (_, value) => {
-        if (value.category !== 'Transfer') {
-          return (
-            <Popconfirm
-              title="Delete the expense"
-              description="Are you sure to delete this expense?"
-              onConfirm={() => delExpense(value.key)}
-              // onCancel={cancel}
-              okText="Yes"
-              cancelText="No"
-            >
-              <Button danger>Delete</Button>
-            </Popconfirm>
-          );
-        }
-      },
-    },
-  ];
-
-  const mergedColumns = columns.map((col) => {
-    if (!col.editable) {
-      return col;
-    }
-    return {
-      ...col,
-      onCell: (value) => ({
-        value,
-        inputType: col.dataIndex === 'value' ? 'number' : 'text',
-        dataIndex: col.dataIndex,
-        title: col.title,
-        editing: isEditing(value),
-      }),
-    };
-  });
 
   const showModal = () => {
     setIsModalOpen(true);
@@ -327,28 +146,51 @@ const Expenses = ({ user }) => {
 
   return (
     <div>
-      <div>
-        {groupedExpenses == null ? (
-          <></>
-        ) : (
-          <div>
-            <Form form={editForm} component={false}>
-              <Table
-                components={{
-                  body: {
-                    cell: EditableCell,
-                  },
-                }}
-                bordered
-                dataSource={dataTable}
-                columns={mergedColumns}
-                rowClassName="editable-row"
-                pagination={false}
-              />
-            </Form>
-          </div>
-        )}
-      </div>
+      {sortedData && (
+        <div>
+          {Object.entries(sortedData).map(([date, expenses]) => (
+            <List
+              key={date}
+              header={
+                <div className="flex justify-between text-gray-400">
+                  <div>{date}</div>
+                  <div>{getTotalMoneyByDate(expenses)} €</div>
+                </div>
+              }
+              itemLayout="horizontal"
+              className="mb-4"
+              dataSource={expenses}
+              renderItem={(expense) => (
+                <List.Item
+                  key={expense.id}
+                  className="flex justify-between items-center"
+                >
+                  <div className="flex gap-4 items-center">
+                    <div className="text-gray-500">
+                      {iconObject[getCategoryIcon(expense.categoryId)]}
+                    </div>
+                    <div>
+                      <div>{expense.text}</div>
+                      <div className="text-gray-400">
+                        {getAssetName(expense.assetId)}
+                      </div>
+                    </div>
+                  </div>
+                  <div>
+                    {expense.money > 0 ? (
+                      <span className="text-purple-700">
+                        + {expense.money} €
+                      </span>
+                    ) : (
+                      <span>{expense.money} €</span>
+                    )}
+                  </div>
+                </List.Item>
+              )}
+            />
+          ))}
+        </div>
+      )}
       <Button type="primary" onClick={showModal} className="modal-button">
         +
       </Button>

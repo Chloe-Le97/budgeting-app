@@ -41,7 +41,7 @@ router.post('/',tokenExtractor, async(req,res, next)=>{
 
     if(assetTransferFrom && assetTransferTo){
 		try{
-			await Expense.create({
+			const transfer = await Expense.create({
 				category: 'Transfer',
 				text : 'Transfer money',
 				money: 0 - value,
@@ -53,7 +53,8 @@ router.post('/',tokenExtractor, async(req,res, next)=>{
 				money: value,
 				assetId: assetTransferTo.id,
 				userId: user.id,
-				text : 'Receive money'
+				text : 'Receive money',
+				transactionId : transfer.transactionId
 			})
 	
 			res.status(200).json({ message: "Success!" });

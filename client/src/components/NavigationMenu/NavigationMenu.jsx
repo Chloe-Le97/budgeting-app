@@ -1,5 +1,4 @@
 import { Button, Dropdown, Menu } from 'antd';
-import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
 import { useAuth } from '../AuthProvider/AuthProvider';
@@ -41,7 +40,23 @@ const NavigationMenu = () => {
     },
     {
       label: (
-        <Button danger onClick={handleLogout} type="primary" className="w-full">
+        <Link to="/bill" className="dropdown-link">
+          Bill
+        </Link>
+      ),
+      key: 'bill',
+    },
+    {
+      label: (
+        <Link to="/category" className="dropdown-link">
+          Category
+        </Link>
+      ),
+      key: 'category',
+    },
+    {
+      label: (
+        <Button danger onClick={handleLogout} type="link" className="logout-btn">
           Logout
         </Button>
       ),

@@ -6,10 +6,13 @@ import ReactDOM from 'react-dom/client';
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 
 import App from './App';
+import './App.scss';
 import Assets from './components/Assets/Assets';
 import SignUpForm from './components/AuthForm/SignUpForm';
 import AuthProvider from './components/AuthProvider/AuthProvider';
+import Bill from './components/Bill/Bill';
 import Budget from './components/Budget/Budget';
+import Category from './components/Category/Category';
 import NavigationMenu from './components/NavigationMenu/NavigationMenu';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import './index.css';
@@ -51,6 +54,26 @@ const router = createBrowserRouter([
       <ProtectedRoute>
         <Layout>
           <Budget />
+        </Layout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/bill',
+    element: (
+      <ProtectedRoute>
+        <Layout>
+          <Bill />
+        </Layout>
+      </ProtectedRoute>
+    ),
+  },
+  {
+    path: '/category',
+    element: (
+      <ProtectedRoute>
+        <Layout>
+          <Category />
         </Layout>
       </ProtectedRoute>
     ),
