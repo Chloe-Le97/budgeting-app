@@ -1,14 +1,31 @@
-import { Button, Form, Input, Select } from 'antd';
+import { Button, Form, Input, Radio, Select } from 'antd';
 import React from 'react';
 
+import { iconObject } from '../../utils/iconMapping';
 import { useGetAsset } from '../Assets/assetDataProvider';
+import { useGetCategory } from '../Category/categoryDataProvider';
 import { useCreateIncomeMutation } from './expenseDataProvider';
 
 const IncomeForm = ({ handleOk }) => {
   const [formIncome] = Form.useForm();
 
   const { data: dataAsset } = useGetAsset();
+  const { data: dataCategory } = useGetCategory();
   const { createIncome } = useCreateIncomeMutation();
+
+  const categories = dataCategory
+    ?.filter((item) => item.type === 'Income')
+    .sort((a, b) => a.id - b.id);
+
+  const iconOptions = categories?.map((category) => ({
+    value: category.id,
+    label: (
+      <div className="category-icon-add w-full flex flex-col justify-center">
+        <div className="mb-0 icon">{iconObject[category.icon]}</div>
+        <div className="category-name">{category.name}</div>
+      </div>
+    ),
+  }));
 
   const options = dataAsset?.map((asset) => ({
     value: asset.asset_id,
@@ -20,21 +37,51 @@ const IncomeForm = ({ handleOk }) => {
     const text = values.text;
     const category = values.category;
     const assetId = values.asset;
-    await createIncome({ money, text, category, assetId });
+    const categoryId = values.icon;
+    await createIncome({ money, text, category, assetId, categoryId });
     formIncome.resetFields();
     handleOk();
   };
 
   return (
     <div>
-      <Form name="income-form" onFinish={addIncome} form={formIncome}>
-        <Form.Item name="money" label="Value">
+      <Form
+        name="income-form"
+        onFinish={addIncome}
+        form={formIncome}
+        className="income-form"
+      >
+        <Form.Item
+          name="icon"
+          label=""
+          className="mt-5"
+          rules={[
+            {
+              required: true,
+            },
+          ]}
+        >
+          <Radio.Group
+            className="category-edit-icon-btn"
+            options={iconOptions}
+            allowClear
+            optionType="button"
+            size="large"
+          />
+        </Form.Item>
+        <Form.Item
+          name="money"
+          label="Value"
+          rules={[
+            {
+              required: true,
+            },
+          ]}
+          className="mt-9"
+        >
           <Input type="number" />
         </Form.Item>
         <Form.Item name="text" label="Description">
-          <Input />
-        </Form.Item>
-        <Form.Item name="category" label="Category">
           <Input />
         </Form.Item>
         <Form.Item

@@ -14,6 +14,7 @@ const expensesRouter = require('./controllers/expenses')
 const incomeRouter = require('./controllers/income')
 const transferRouter = require('./controllers/transfer')
 const budgetRouter = require('./controllers/budget')
+const categoryRouter = require('./controllers/category')
 
 app.use(express.json())
 
@@ -24,6 +25,20 @@ app.use('/api/expenses', expensesRouter)
 app.use('/api/income', incomeRouter)
 app.use('/api/transfer', transferRouter)
 app.use('/api/budget', budgetRouter)
+app.use('/api/category', categoryRouter)
+
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } 
+
+  next(error)
+}
+
+// this has to be the last loaded middleware, also all the routes should be registered before this!
+app.use(errorHandler)
 
 const start = async () => {
   await connectToDatabase()

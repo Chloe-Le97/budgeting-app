@@ -20,17 +20,21 @@ const tokenExtractor = (req, res, next) => {
 }
 
 
-router.get('/', tokenExtractor ,async (req, res) => {
+router.get('/', tokenExtractor ,async (req, res, next) => {
 	const user = await User.findByPk(req.decodedToken.id)
-	const expenses = await Expense.findAll({
-		where: {
-			userId: user.id
-		}
-	})
-	res.json(expenses.filter(item => item.isAssetUpdate == false))
+	try{
+		const expenses = await Expense.findAll({
+			where: {
+				userId: user.id
+			}
+		})
+		res.json(expenses.filter(item => item.isAssetUpdate == false))
+	}catch(error){
+		next(error)
+	}
 })
 
-router.post('/',tokenExtractor, async(req,res)=>{
+router.post('/',tokenExtractor, async(req,res, next)=>{
 	const user = await User.findByPk(req.decodedToken.id)
 
 	const asset = await Asset.findOne({
@@ -41,20 +45,25 @@ router.post('/',tokenExtractor, async(req,res)=>{
 	})
 
 	if(asset){
-		const expense = await Expense.create({
-			...req.body,
-			money: 0 - req.body.money,
-			assetId: req.body.assetId,
-			userId: user.id
-		})
-		res.json(expense)
+		try{
+			const expense = await Expense.create({
+				...req.body,
+				money: 0 - req.body.money,
+				assetId: req.body.assetId,
+				userId: user.id
+			})
+			res.json(expense)
+		}catch(error){
+			next(error)
+		}
+
 	}else{
 		return res.status(401).json({ error: 'This asset is not belong to this user' })
 	}
 
 })
 
-router.put('/:id',tokenExtractor, async(req,res)=>{
+router.put('/:id',tokenExtractor, async(req,res, next)=>{
 	const user = await User.findByPk(req.decodedToken.id)
 	const expense = await Expense.findByPk(req.params.id)
 
@@ -63,24 +72,31 @@ router.put('/:id',tokenExtractor, async(req,res)=>{
 		expense.text = req.body.text
 		expense.category = req.body.category
 		expense.assetId = req.body.assetId
-	
-		await expense.save()
 		
-		res.json(expense)
+		try{
+			await expense.save()
+			res.json(expense)
+		}catch(error){
+			next(error)
+		}
 	}
 	else{
 		return res.status(403).json({ error: 'You are not authorized to edit this expense' });
 	} 
 })
 
-router.delete('/:id', tokenExtractor, async(req,res) =>{
+router.delete('/:id', tokenExtractor, async(req,res, next) =>{
 	const user = await User.findByPk(req.decodedToken.id)
 	const expense = await Expense.findByPk(req.params.id)
 
 	if(expense.userId === user.id){
-		await expense.destroy()
+		try{
+			await expense.destroy()
 
-		res.status(204).end()
+			res.status(204).end()
+		}catch(error){
+			next(error)
+		}
 	} else {
 		return res.status(403).json({error:'You are not authorized to delete this expense'})
 	}

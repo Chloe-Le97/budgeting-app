@@ -5,17 +5,17 @@ const router = require('express').Router()
 const { SECRET } = require('../util/config')
 const User = require('../models/user')
 
-router.post('/', async (request, response) => {
+router.post('/', async (request, response, next) => {
   const body = request.body
   const { username, password } = request.body
 
-  const user = await User.findOne({
-    where: {
-      username: username
-    }
-  })
-
-  let passwordCorrect;
+  try{
+    const user = await User.findOne({
+      where: {
+        username: username
+      }
+    })
+    let passwordCorrect;
   if (user === null) {
     passwordCorrect = false;
   } else {
@@ -38,6 +38,10 @@ router.post('/', async (request, response) => {
   response
     .status(200)
     .send({ token, username: user.username, name: user.name })
+  }catch(error){
+    next(error)
+  }
+  
 })
 
 module.exports = router

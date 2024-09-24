@@ -19,7 +19,7 @@ Expense.init({
   },
   category: {
     type: DataTypes.TEXT,
-    allowNull: false
+    allowNull: true
   },
   userId:{
     type: DataTypes.INTEGER,
@@ -40,6 +40,11 @@ Expense.init({
     type: DataTypes.BOOLEAN,
     defaultValue: 'false',
     allowNull: false,
+  },
+  transactionId:{
+    type: DataTypes.UUID,
+    defaultValue: DataTypes.UUIDV4,
+    allowNull: true,
   },
   updatedAt: { type: DataTypes.DATE, defaultValue: sequelize.literal("(now() at time zone 'utc')") },
   createdAt: { type: DataTypes.DATE, defaultValue: sequelize.literal("(now() at time zone 'utc')") },

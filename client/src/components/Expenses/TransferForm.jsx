@@ -26,7 +26,12 @@ const TransferForm = ({ handleOk }) => {
 
   return (
     <div>
-      <Form name="income-form" onFinish={addTransfer} form={formTransfer}>
+      <Form
+        name="income-form"
+        onFinish={addTransfer}
+        form={formTransfer}
+        className="pt-8"
+      >
         <Form.Item
           name="fromAsset"
           label="From Asset"
@@ -75,7 +80,15 @@ const TransferForm = ({ handleOk }) => {
         >
           <Select placeholder="To asset" options={options} allowClear></Select>
         </Form.Item>
-        <Form.Item name="money" label="Value">
+        <Form.Item
+          name="money"
+          label="Value"
+          rules={[
+            {
+              required: true,
+            },
+          ]}
+        >
           <Input type="number" />
         </Form.Item>
         <div className="flex justify-end mt-9">

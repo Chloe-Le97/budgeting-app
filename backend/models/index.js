@@ -29,5 +29,5 @@ Expense.sync({alter:true})
 Category.sync({alter:true})
 
 module.exports = {
-  Expense, User, Asset
+  Expense, User, Asset, Category
 }
