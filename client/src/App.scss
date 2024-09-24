@@ -114,8 +114,19 @@ body {
         background-color: white !important;
       }
     }
+
+
     .ant-radio-button-wrapper:not(.ant-radio-button-wrapper-checked){
       color: #9CA3AF
+    }
+  }
+
+  .category-form-edit-icon-btn{
+    row-gap: 10px;
+    font-size: 20px;
+    
+    .ant-radio-button-wrapper{
+      font-size: 20px;
     }
   }
 
@@ -138,4 +149,18 @@ body {
 
   .ant-list-header{
     border-block-end: 1px solid rgba(5, 5, 5, 0.219) !important;
+  }
+
+  .expense-list-item{
+    padding: 16px 0 !important;
+  }
+
+  .expense-icon{
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #9ca3af25;
+    border-radius: 50%;
   }

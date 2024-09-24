@@ -1,4 +1,10 @@
-import { Button, List, Modal, Tabs, Typography } from 'antd';
+import {
+  faMoneyBillTransfer,
+  faPenToSquare,
+  faTrashCan,
+} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Button, List, Modal, Popconfirm, Tabs } from 'antd';
 import * as R from 'ramda';
 import React, { useMemo, useState } from 'react';
 
@@ -82,8 +88,11 @@ const Expenses = () => {
     const total = obj
       .filter((item) => item.category !== 'Transfer')
       .reduce((total, expense) => total + expense.money, 0);
-    console.log(obj.filter((item) => item.category !== 'Transfer'));
-    return total;
+    if (total > 0) {
+      return '+' + total;
+    } else {
+      return total;
+    }
   };
 
   const getCategoryIcon = (categoryId) => {
@@ -152,7 +161,7 @@ const Expenses = () => {
             <List
               key={date}
               header={
-                <div className="flex justify-between text-gray-400">
+                <div className="flex justify-between text-gray-400 text-sm">
                   <div>{date}</div>
                   <div>{getTotalMoneyByDate(expenses)} €</div>
                 </div>
@@ -161,31 +170,50 @@ const Expenses = () => {
               className="mb-4"
               dataSource={expenses}
               renderItem={(expense) => (
-                <List.Item
-                  key={expense.id}
-                  className="flex justify-between items-center"
-                >
-                  <div className="flex gap-4 items-center">
-                    <div className="text-gray-500">
-                      {iconObject[getCategoryIcon(expense.categoryId)]}
-                    </div>
-                    <div>
-                      <div>{expense.text}</div>
-                      <div className="text-gray-400">
-                        {getAssetName(expense.assetId)}
+                <>
+                  {expense.category === 'Transfer' ? (
+                    <List.Item
+                      key={expense.id}
+                      className="flex justify-between items-center expense-list-item text-base"
+                    >
+                      <div className="flex gap-3 items-center">
+                        {getAssetName(expense.assetIdTransfer)}
+                        <FontAwesomeIcon
+                          icon={faMoneyBillTransfer}
+                          className="text-gray-500 text-lg "
+                        />
+                        {getAssetName(expense.assetIdReceived)}
                       </div>
-                    </div>
-                  </div>
-                  <div>
-                    {expense.money > 0 ? (
-                      <span className="text-purple-700">
-                        + {expense.money} €
-                      </span>
-                    ) : (
-                      <span>{expense.money} €</span>
-                    )}
-                  </div>
-                </List.Item>
+                      <div>{expense.transferAmount} €</div>
+                    </List.Item>
+                  ) : (
+                    <List.Item
+                      key={expense.id}
+                      className="flex justify-between items-center expense-list-item"
+                    >
+                      <div className="flex gap-5 items-center">
+                        <div className="text-gray-500 text-lg expense-icon">
+                          {iconObject[getCategoryIcon(expense.categoryId)]}
+                        </div>
+                        <div>
+                          <div className="mb-2 text-base">{expense.text}</div>
+                          <div className="text-gray-400 text-sm">
+                            {getAssetName(expense.assetId)}
+                          </div>
+                        </div>
+                      </div>
+                      <div className="text-base">
+                        {expense.money > 0 ? (
+                          <span className="text-purple-700 ">
+                            + {expense.money} €
+                          </span>
+                        ) : (
+                          <span>{expense.money} €</span>
+                        )}
+                      </div>
+                    </List.Item>
+                  )}
+                </>
               )}
             />
           ))}
