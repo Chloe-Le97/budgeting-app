@@ -1,5 +1,6 @@
 import {
   faAnchor,
+  faArrowTrendUp,
   faBaby,
   faBaseball,
   faBasketball,
@@ -148,6 +149,7 @@ export const iconObject = {
   faMoneyBill: <FontAwesomeIcon icon={faMoneyBill} />,
   faHandshake: <FontAwesomeIcon icon={faHandshake} />,
   faHandHoldingDollar: <FontAwesomeIcon icon={faHandHoldingDollar} />,
+  faArrowTrendUp: <FontAwesomeIcon icon={faArrowTrendUp} />,
   faLandmark: <FontAwesomeIcon icon={faLandmark} />,
   faScaleBalanced: <FontAwesomeIcon icon={faScaleBalanced} />,
   faGears: <FontAwesomeIcon icon={faGears} />,

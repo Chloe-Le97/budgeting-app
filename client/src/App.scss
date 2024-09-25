@@ -164,3 +164,36 @@ body {
     background-color: #9ca3af25;
     border-radius: 50%;
   }
+
+  .dropdown-btn-expense{
+    .ant-btn-compact-item:not(.ant-btn-icon-only){
+      display: none;
+    }
+    .ant-btn-icon-only{
+      position: absolute;
+      right: -50px;
+      border-radius: 0px !important;
+      border: none !important;
+      top: -15px;
+      svg{
+        color: black;
+      }
+      .anticon-ellipsis{
+        font-size: 19px;
+      }
+    }
+  }
+
+  li.expense-list-btn-dropdown{
+    padding: 0px !important;
+  }
+
+  .icon-btn{
+    padding: 0;
+    display: block;
+  }
+
+  .expense-delete-popconfirm{
+    width: 50% !important;
+    max-height: fit-content !important;
+  }

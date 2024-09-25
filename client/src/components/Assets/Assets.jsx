@@ -155,8 +155,8 @@ const Assets = () => {
       render: (_, value) => {
         return (
           <Popconfirm
-            title="Delete the expense"
-            description="Are you sure to delete this expense?"
+            title="Delete the asset"
+            description="Are you sure to delete this asset?"
             onConfirm={() => delAsset(value.key)}
             // onCancel={cancel}
             okText="Yes"

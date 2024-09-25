@@ -4,9 +4,19 @@ import {
   faTrashCan,
 } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Button, List, Modal, Popconfirm, Tabs } from 'antd';
+import {
+  Button,
+  Dropdown,
+  Form,
+  Input,
+  List,
+  Modal,
+  Radio,
+  Select,
+  Tabs,
+} from 'antd';
 import * as R from 'ramda';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 import category from '../../services/category';
 import { iconObject } from '../../utils/iconMapping';
@@ -16,7 +26,6 @@ import ExpensesForm from './ExpensesForm';
 import IncomeForm from './IncomeForm';
 import TransferForm from './TransferForm';
 import {
-  useCreateExpenseMutation,
   useGetExpense,
   useRemoveExpenseMutation,
   useUpdateExpenseMutation,
@@ -24,6 +33,10 @@ import {
 
 const Expenses = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isModalEditFormOpen, setIsModalEditFormOpen] = useState(false);
+  const [currentEditExpense, setCurrentEditExpense] = useState(null);
+
+  const [formEditExpense] = Form.useForm();
 
   const { data } = useGetExpense();
   const { data: dataAsset } = useGetAsset();
@@ -31,6 +44,21 @@ const Expenses = () => {
 
   const { updateExpense } = useUpdateExpenseMutation();
   const { removeExpense } = useRemoveExpenseMutation();
+
+  const optionsAsset = dataAsset?.map((asset) => ({
+    value: asset.asset_id,
+    label: asset.name,
+  }));
+
+  const iconOptions = dataCategory?.map((category) => ({
+    value: category.id,
+    label: (
+      <div className="category-icon-add w-full flex flex-col justify-center">
+        <div className="mb-0 icon">{iconObject[category.icon]}</div>
+        <div className="category-name">{category.name}</div>
+      </div>
+    ),
+  }));
 
   const getDate = (expense) =>
     new Date(expense.createdAt).toISOString().split('T')[0];
@@ -45,8 +73,6 @@ const Expenses = () => {
 
   const sortedData = useMemo(() => {
     if (!data) return null;
-
-    console.log(data);
 
     // Step 1: Group expenses by transactionId
     const groupedByTransaction = R.groupBy(
@@ -105,6 +131,16 @@ const Expenses = () => {
     }
   };
 
+  const getCategoryName = (categoryId) => {
+    const category = dataCategory?.find((item) => item.id === categoryId);
+
+    console.log(dataCategory);
+
+    if (category) {
+      return category.name;
+    }
+  };
+
   const getAssetName = (assetId) => {
     const asset = dataAsset?.find((item) => item.asset_id === assetId);
 
@@ -113,26 +149,57 @@ const Expenses = () => {
     }
   };
 
-  console.log(sortedData);
-
   const delExpense = async (id) => {
-    await removeExpense({ id });
+    if (window.confirm('Do you want to delete this expense?')) {
+      await removeExpense({ id });
+    }
   };
 
-  const edit = async (value) => {
-    console.log(value);
-  };
+  useEffect(() => {
+    if (currentEditExpense) {
+      formEditExpense.setFieldsValue(currentEditExpense);
+      const categoryIcon = getCategoryIcon(currentEditExpense.categoryId);
+    }
+  }, [currentEditExpense, formEditExpense]);
 
   const showModal = () => {
     setIsModalOpen(true);
+  };
+
+  const showEditModal = (expenseEditId) => {
+    setIsModalEditFormOpen(true);
+    const expenseEditObj = data?.find((expense) => expense.id == expenseEditId);
+    setCurrentEditExpense(expenseEditObj);
   };
 
   const handleOk = () => {
     setIsModalOpen(false);
   };
 
+  const handleEditFormOk = () => {
+    setIsModalEditFormOpen(false);
+    setCurrentEditExpense(null);
+  };
+
   const handleCancel = () => {
     setIsModalOpen(false);
+  };
+
+  const handleEditFormCancel = () => {
+    setIsModalEditFormOpen(false);
+    setCurrentEditExpense(null);
+  };
+
+  const editExpense = async () => {
+    const formValue = formEditExpense.getFieldValue();
+    const newObject = {
+      money: formValue.money,
+      text: formValue.text,
+      categoryId: formValue.categoryId,
+      assetId: formValue.assetId,
+    };
+    await updateExpense({ id: formValue.id, data: newObject });
+    handleEditFormOk();
   };
 
   const tabItems = [
@@ -152,6 +219,45 @@ const Expenses = () => {
       children: <TransferForm handleOk={handleOk} />,
     },
   ];
+
+  const expenseDropdown = (id) => {
+    return (
+      <Dropdown.Button
+        className="dropdown-btn-expense absolute"
+        menu={{
+          items: [
+            {
+              label: (
+                <Button
+                  type="link"
+                  className="icon-btn w-full"
+                  onClick={() => showEditModal(id)}
+                >
+                  <FontAwesomeIcon icon={faPenToSquare} />
+                </Button>
+              ),
+              key: '1',
+              className: 'expense-list-btn-dropdown',
+            },
+            {
+              label: (
+                <Button
+                  danger
+                  onClick={() => delExpense(id)}
+                  type="link"
+                  className="icon-btn w-full"
+                >
+                  <FontAwesomeIcon icon={faTrashCan} className="text-red-500" />
+                </Button>
+              ),
+              key: '2',
+              className: 'expense-list-btn-dropdown',
+            },
+          ],
+        }}
+      ></Dropdown.Button>
+    );
+  };
 
   return (
     <div>
@@ -189,14 +295,18 @@ const Expenses = () => {
                   ) : (
                     <List.Item
                       key={expense.id}
-                      className="flex justify-between items-center expense-list-item"
+                      className="flex justify-between items-center expense-list-item relative"
                     >
                       <div className="flex gap-5 items-center">
                         <div className="text-gray-500 text-lg expense-icon">
                           {iconObject[getCategoryIcon(expense.categoryId)]}
                         </div>
                         <div>
-                          <div className="mb-2 text-base">{expense.text}</div>
+                          <div className="mb-2 text-base">
+                            {expense.text === null
+                              ? getCategoryName(expense.categoryId)
+                              : expense.text}
+                          </div>
                           <div className="text-gray-400 text-sm">
                             {getAssetName(expense.assetId)}
                           </div>
@@ -211,6 +321,7 @@ const Expenses = () => {
                           <span>{expense.money} €</span>
                         )}
                       </div>
+                      {expenseDropdown(expense.id)}
                     </List.Item>
                   )}
                 </>
@@ -230,6 +341,52 @@ const Expenses = () => {
         footer=""
       >
         <Tabs defaultActiveKey="1" items={tabItems} />
+      </Modal>
+      <Modal
+        title=""
+        open={isModalEditFormOpen}
+        onOk={handleEditFormOk}
+        onCancel={handleEditFormCancel}
+        footer=""
+      >
+        <Form name="basic" onFinish={editExpense} form={formEditExpense}>
+          <Form.Item name="categoryId" label="" className="mt-5">
+            <Radio.Group
+              className="category-edit-icon-btn"
+              options={iconOptions}
+              allowClear
+              optionType="button"
+              size="large"
+            />
+          </Form.Item>
+          <Form.Item
+            name="money"
+            label="Value"
+            rules={[
+              {
+                required: true,
+              },
+            ]}
+            className="mt-9"
+          >
+            <Input type="number" />
+          </Form.Item>
+          <Form.Item name="text" label="Description">
+            <Input />
+          </Form.Item>
+          <Form.Item name="assetId" label="Asset">
+            <Select
+              placeholder="Select an asset"
+              options={optionsAsset}
+              allowClear
+            ></Select>
+          </Form.Item>
+          <div className="flex justify-end mt-9">
+            <Button type="primary" htmlType="submit">
+              Edit expense
+            </Button>
+          </div>
+        </Form>
       </Modal>
     </div>
   );

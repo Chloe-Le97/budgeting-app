@@ -79,7 +79,8 @@ const iconArray = ['faPhone',
   'faChild',
   'faMoneyBill',
   'faHandHoldingDollar',
-  'faSeedling']
+  'faSeedling', 
+  'faArrowTrendUp']
 
 Category.init({
   id: {
