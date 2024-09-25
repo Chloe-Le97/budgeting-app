@@ -72,6 +72,7 @@ router.put('/:id',tokenExtractor, async(req,res, next)=>{
 		expense.text = req.body.text
 		expense.category = req.body.category
 		expense.assetId = req.body.assetId
+		expense.categoryId = req.body.categoryId
 		
 		try{
 			await expense.save()

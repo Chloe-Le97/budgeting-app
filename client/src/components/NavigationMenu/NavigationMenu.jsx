@@ -56,7 +56,12 @@ const NavigationMenu = () => {
     },
     {
       label: (
-        <Button danger onClick={handleLogout} type="link" className="logout-btn">
+        <Button
+          danger
+          onClick={handleLogout}
+          type="link"
+          className="logout-btn"
+        >
           Logout
         </Button>
       ),

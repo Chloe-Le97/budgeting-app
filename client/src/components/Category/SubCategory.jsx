@@ -141,7 +141,7 @@ const SubCategory = ({ type }) => {
           </Form.Item>
           <Form.Item name="icon" label="" className="mt-5">
             <Radio.Group
-              className="category-edit-icon-btn"
+              className="category-form-edit-icon-btn category-edit-icon-btn"
               options={iconOptions}
               onChange={handleIconChange}
               allowClear
