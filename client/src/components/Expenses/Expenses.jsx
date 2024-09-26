@@ -303,7 +303,7 @@ const Expenses = () => {
                         </div>
                         <div>
                           <div className="mb-2 text-base">
-                            {expense.text === null
+                            {expense.text === null || expense.text === ''
                               ? getCategoryName(expense.categoryId)
                               : expense.text}
                           </div>

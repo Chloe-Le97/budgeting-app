@@ -110,8 +110,8 @@ const Budget = () => {
               />
             </div>
             <div className="w-2/4">
-              <div className="flex justify-between items-center pb-3">
-                <div className="budget-remain">Remaining:</div>
+              <div className="flex justify-between items-center pb-3 flex-wrap">
+                <div className="budget-remain">Remain:</div>
                 <div className="budget-remain">
                   {dataBudget?.monthlyBudget - currentMonthExpenses} €
                 </div>

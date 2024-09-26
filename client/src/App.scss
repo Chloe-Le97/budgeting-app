@@ -16,7 +16,11 @@ body {
     width: 50px;
     position: fixed; /* Fixed to viewport but within body's max-width */
     bottom: 10px;
-    right: calc((100vw - 1024px) / 2 + 10px); /* Align with body's right side */
+    left: calc(100vw - 50px);
+    @media only screen and (min-width: 1024px) {
+      left: unset;
+      right: calc((100vw - 1024px) / 2 + 10px); /* Align with body's right side */
+    }
 }
 
 .ant-tabs-nav{
@@ -59,7 +63,7 @@ body {
 }
   
   .budget-remain{
-    font-size: 19px;
+    font-size: 18px;
     font-weight: 500;
   }
 
