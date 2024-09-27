@@ -1,4 +1,5 @@
 import { Button, Form, Input, Select } from 'antd';
+import PropTypes from 'prop-types';
 import React from 'react';
 
 import { useGetAsset } from '../Assets/assetDataProvider';
@@ -99,6 +100,14 @@ const TransferForm = ({ handleOk }) => {
       </Form>
     </div>
   );
+};
+
+TransferForm.propTypes = {
+  handleOk: PropTypes.func,
+};
+
+TransferForm.defaultProps = {
+  handleOk: () => {},
 };
 
 export default TransferForm;

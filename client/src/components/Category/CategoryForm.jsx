@@ -1,4 +1,5 @@
 import { Button, Form, Input, Radio, Select } from 'antd';
+import PropTypes from 'prop-types';
 import React from 'react';
 import { useState } from 'react';
 
@@ -80,6 +81,14 @@ const CategoryForm = ({ handleOk }) => {
       </Form>
     </div>
   );
+};
+
+CategoryForm.propTypes = {
+  handleOk: PropTypes.func,
+};
+
+CategoryForm.defaultProps = {
+  handleOk: () => {},
 };
 
 export default CategoryForm;

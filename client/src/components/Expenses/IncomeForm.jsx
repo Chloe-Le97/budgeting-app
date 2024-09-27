@@ -1,4 +1,5 @@
 import { Button, Form, Input, Radio, Select } from 'antd';
+import PropTypes from 'prop-types';
 import React from 'react';
 
 import { iconObject } from '../../utils/iconMapping';
@@ -107,6 +108,14 @@ const IncomeForm = ({ handleOk }) => {
       </Form>
     </div>
   );
+};
+
+IncomeForm.propTypes = {
+  handleOk: PropTypes.func,
+};
+
+IncomeForm.defaultProps = {
+  handleOk: () => {},
 };
 
 export default IncomeForm;

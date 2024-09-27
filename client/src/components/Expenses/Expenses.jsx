@@ -18,7 +18,6 @@ import {
 import * as R from 'ramda';
 import React, { useEffect, useMemo, useState } from 'react';
 
-import category from '../../services/category';
 import { iconObject } from '../../utils/iconMapping';
 import { useGetAsset } from '../Assets/assetDataProvider';
 import { useGetCategory } from '../Category/categoryDataProvider';

@@ -1,6 +1,7 @@
 import { faPenToSquare, faTrashCan } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { Button, Form, Input, Modal, Popconfirm, Radio, Select } from 'antd';
+import PropTypes from 'prop-types';
 import { useEffect, useState } from 'react';
 
 import { iconObject } from '../../utils/iconMapping';
@@ -158,6 +159,14 @@ const SubCategory = ({ type }) => {
       </Modal>
     </div>
   );
+};
+
+SubCategory.propTypes = {
+  type: PropTypes.string.isRequired,
+};
+
+SubCategory.defaultProps = {
+  type: 'Expenses',
 };
 
 export default SubCategory;
