@@ -1,13 +1,44 @@
+version: '3'
 services:
+  # Node.js backend service
+  app:
+    build:
+      context: ./backend   # Set the build context to the backend folder
+      dockerfile: Dockerfile  # Dockerfile is the default name, but you can specify it explicitly
+    ports:
+      - "3001:3001"
+    depends_on:
+      - db
+    environment:
+      # Use environment variables to configure database connection
+      DB_HOST: db
+      DB_USER: postgres
+      DB_PASSWORD: example
+      DB_NAME: postgres
+    volumes:
+      - ./backend:/usr/src/app  # Bind the backend folder to the container
+    restart: always
+
+  # PostgreSQL service
   db:
     image: postgres
     restart: always
     environment:
       POSTGRES_PASSWORD: example
     volumes:
-      - pgdata:/var/lib/postgresql/data 
-    ports: 
-      - 5432:5432
- 
+      - pgdata:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  client:
+    container_name: client
+    build: 
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    depends_on:
+      - app 
+
 volumes:
   pgdata:

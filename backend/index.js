@@ -27,6 +27,8 @@ app.use('/api/transfer', transferRouter)
 app.use('/api/budget', budgetRouter)
 app.use('/api/category', categoryRouter)
 
+app.get('/hello',(req,res)=> res.json({data: 'Hello'}))
+
 const errorHandler = (error, request, response, next) => {
   console.error(error.message)
 

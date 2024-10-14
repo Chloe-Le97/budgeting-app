@@ -24,6 +24,8 @@ const SubCategory = ({ type }) => {
     ?.filter((item) => item.type === type)
     .sort((a, b) => a.id - b.id);
 
+  console.log(categories);
+
   const categoryTypeOptions = [
     {
       value: 'Income',
