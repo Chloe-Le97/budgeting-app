@@ -1,7 +1,7 @@
 version: '3'
 services:
   # Node.js backend service
-  app:
+  backend:
     build:
       context: ./backend   # Set the build context to the backend folder
       dockerfile: Dockerfile  # Dockerfile is the default name, but you can specify it explicitly
@@ -38,7 +38,7 @@ services:
     ports:
       - "5173:5173"
     depends_on:
-      - app 
+      - backend 
 
 volumes:
   pgdata:
