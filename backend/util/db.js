@@ -5,7 +5,6 @@ const { Umzug, SequelizeStorage } = require('umzug')
 
 const sequelize = new Sequelize(DATABASE_URL)
 
-
 const runMigrations = async () => {
   const migrator = new Umzug({
     migrations: {

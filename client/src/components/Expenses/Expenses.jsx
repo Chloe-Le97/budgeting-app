@@ -133,8 +133,6 @@ const Expenses = () => {
   const getCategoryName = (categoryId) => {
     const category = dataCategory?.find((item) => item.id === categoryId);
 
-    console.log(dataCategory);
-
     if (category) {
       return category.name;
     }

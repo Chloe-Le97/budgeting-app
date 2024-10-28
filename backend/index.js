@@ -15,6 +15,7 @@ const incomeRouter = require('./controllers/income')
 const transferRouter = require('./controllers/transfer')
 const budgetRouter = require('./controllers/budget')
 const categoryRouter = require('./controllers/category')
+const billRouter = require('./controllers/bill')
 
 app.use(express.json())
 
@@ -26,6 +27,7 @@ app.use('/api/income', incomeRouter)
 app.use('/api/transfer', transferRouter)
 app.use('/api/budget', budgetRouter)
 app.use('/api/category', categoryRouter)
+app.use('/api/bill', billRouter)
 
 app.get('/hello',(req,res)=> res.json({data: 'Hello'}))
 

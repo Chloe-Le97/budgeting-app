@@ -19,7 +19,6 @@ const tokenExtractor = (req, res, next) => {
 	next()
 }
 
-
 router.get('/', tokenExtractor ,async (req, res, next) => {
 	const user = await User.findByPk(req.decodedToken.id)
 	try{
