@@ -19,22 +19,6 @@ const tokenExtractor = (req, res, next) => {
 	next()
   }
 
-//   router.get('/', tokenExtractor ,async (req, res, next) => {
-// 	const user = await User.findByPk(req.decodedToken.id)
-// 	try{
-// 		const expensesAll = await Expense.findAll({
-// 			where: {
-// 				userId: user.id
-// 			}
-// 		})
-// 		const expenses = expensesAll.filter(item => item.isAssetUpdate == false)
-
-//         res.json(expenses);
-// 	}catch(error){
-// 		next(error)
-// 	}
-// })
-
 router.get('/', tokenExtractor ,async (req, res, next) => {
 	const user = await User.findByPk(req.decodedToken.id)
 
