@@ -3,7 +3,7 @@ import incomeService from '../../services/income'
 import transferService from '../../services/transfer'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import {assetQueryKey} from '../Assets/assetDataProvider'
-
+import {billQueryKey} from '../Bill/billDataProvider'
 export const expenseQueryKey = 'expenses'
 
 export const useGetExpense = () =>{
@@ -21,6 +21,7 @@ export const useCreateExpenseMutation = () =>{
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: [expenseQueryKey] })
             queryClient.invalidateQueries({ queryKey: [assetQueryKey] })
+            queryClient.invalidateQueries({ queryKey: [billQueryKey] })
             // queryClient.setQueryData({queryKey},(oldData) => oldData?.concat(expense))
         }
       })
@@ -34,6 +35,7 @@ export const useCreateIncomeMutation = () =>{
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: [expenseQueryKey] })
             queryClient.invalidateQueries({ queryKey: [assetQueryKey] })
+            queryClient.invalidateQueries({ queryKey: [billQueryKey] })
             // queryClient.setQueryData({queryKey},(oldData) => oldData?.concat(expense))
         }
       })
@@ -48,6 +50,7 @@ export const useUpdateExpenseMutation = () =>{
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: [expenseQueryKey] })
             queryClient.invalidateQueries({ queryKey: [assetQueryKey] })
+            queryClient.invalidateQueries({ queryKey: [billQueryKey] })
         }
       })
       return {updateExpense, isPending}
@@ -61,6 +64,7 @@ export const useRemoveExpenseMutation = () =>{
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: [expenseQueryKey] })
             queryClient.invalidateQueries({ queryKey: [assetQueryKey] })
+            queryClient.invalidateQueries({ queryKey: [billQueryKey] })
         }
       })
       return {removeExpense, isPending}

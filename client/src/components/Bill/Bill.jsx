@@ -1,10 +1,14 @@
+import { Table } from 'antd';
+import { Typography } from 'antd';
 import { keys } from 'ramda';
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 
-import { useGetExpense } from '../Expenses/expenseDataProvider';
+import { useGetBill } from './billDataProvider';
+
+const { Title } = Typography;
 
 const Bill = () => {
-  const { data } = useGetExpense();
+  const { data } = useGetBill();
 
   const currentYear = new Date().getFullYear();
   const [selectedYear, setSelectedYear] = useState(currentYear);
@@ -19,10 +23,47 @@ const Bill = () => {
     setSelectedYear(event.target.value);
   };
 
+  console.log(data);
+
+  const dataTable = useMemo(
+    () =>
+      data?.[selectedYear]?.monthly.map((item) => ({
+        key: Object.keys(item)[0],
+        month: Object.keys(item)[0],
+        income: item[Object.keys(item)].income,
+        expense: item[Object.keys(item)].expense,
+        balance:
+          item[Object.keys(item)].income - item[Object.keys(item)].expense,
+      })),
+    [data, selectedYear],
+  );
+
+  const columns = [
+    {
+      title: 'Month',
+      dataIndex: 'month',
+      key: 'month',
+    },
+    {
+      title: 'Income',
+      dataIndex: 'income',
+      key: 'income',
+    },
+    {
+      title: 'Expense',
+      dataIndex: 'expense',
+      key: 'expense',
+    },
+    {
+      title: 'Balance',
+      dataIndex: 'balance',
+      key: 'balance',
+    },
+  ];
   return (
     <div>
-      <h2>Bill</h2>
-      <div>
+      <Title level={2}>Bill</Title>
+      <div className="my-6">
         <label htmlFor="year-select">Year: </label>
         <select id="year-select" value={selectedYear} onChange={handleChange}>
           <option value="">--Year--</option>
@@ -33,17 +74,27 @@ const Bill = () => {
           ))}
         </select>
       </div>
-      <h2>Monthly Totals for {selectedYear}</h2>
-      <ul>
-        {keys(monthlyTotals).map((month) => {
+      <Table
+        columns={columns}
+        dataSource={dataTable}
+        summary={() => {
           return (
-            <li key={month}>
-              {month} : Income : {monthlyTotals[month].income} €; Expense :{' '}
-              {monthlyTotals[month].expense}€
-            </li>
+            <>
+              <Table.Summary.Cell index={0}>Total</Table.Summary.Cell>
+              <Table.Summary.Cell index={1}>
+                {data?.[selectedYear]?.yearly.income}
+              </Table.Summary.Cell>
+              <Table.Summary.Cell index={2}>
+                {data?.[selectedYear]?.yearly.expense}
+              </Table.Summary.Cell>
+              <Table.Summary.Cell index={3}>
+                {data?.[selectedYear]?.yearly.income -
+                  data?.[selectedYear]?.yearly.expense}
+              </Table.Summary.Cell>
+            </>
           );
-        })}
-      </ul>
+        }}
+      />
     </div>
   );
 };
