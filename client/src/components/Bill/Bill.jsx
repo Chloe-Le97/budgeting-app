@@ -1,7 +1,7 @@
 import { Table } from 'antd';
 import { Typography } from 'antd';
 import { keys } from 'ramda';
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 import { useGetBill } from './billDataProvider';
 
@@ -60,6 +60,7 @@ const Bill = () => {
       key: 'balance',
     },
   ];
+
   return (
     <div>
       <Title level={2}>Bill</Title>
