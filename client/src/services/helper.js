@@ -1,5 +1,5 @@
 import axios from 'axios'
-const baseUrl = 'http://192.168.0.115:3001/'
+const baseUrl = 'http://192.168.64.1:3001/'
 
 let token = null
 
