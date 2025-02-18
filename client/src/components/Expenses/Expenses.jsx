@@ -219,7 +219,7 @@ const Expenses = () => {
 
   const expenseEditButton = (id) => {
     return (
-      <div className="pl-6 gap-4 expense-edit absolute group/edit invisible group-hover/item:visible ">
+      <div className="pl-6 gap-4 expense-edit flex -right-20 absolute group/edit invisible group-hover/item:visible ">
         <Button
           type="link"
           className="icon-btn w-full"
@@ -246,7 +246,7 @@ const Expenses = () => {
   return (
     <div>
       {sortedData && (
-        <div className="expense-list-container">
+        <div className="w-9/10">
           {Object.entries(sortedData).map(([date, expenses]) => (
             <List
               key={date}
