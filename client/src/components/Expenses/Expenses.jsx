@@ -217,49 +217,36 @@ const Expenses = () => {
     },
   ];
 
-  const expenseDropdown = (id) => {
+  const expenseEditButton = (id) => {
     return (
-      <Dropdown.Button
-        className="dropdown-btn-expense absolute"
-        menu={{
-          items: [
-            {
-              label: (
-                <Button
-                  type="link"
-                  className="icon-btn w-full"
-                  onClick={() => showEditModal(id)}
-                >
-                  <FontAwesomeIcon icon={faPenToSquare} />
-                </Button>
-              ),
-              key: '1',
-              className: 'expense-list-btn-dropdown',
-            },
-            {
-              label: (
-                <Button
-                  danger
-                  onClick={() => delExpense(id)}
-                  type="link"
-                  className="icon-btn w-full"
-                >
-                  <FontAwesomeIcon icon={faTrashCan} className="text-red-500" />
-                </Button>
-              ),
-              key: '2',
-              className: 'expense-list-btn-dropdown',
-            },
-          ],
-        }}
-      ></Dropdown.Button>
+      <div className="pl-6 gap-4 expense-edit flex -right-20 absolute group/edit invisible group-hover/item:visible ">
+        <Button
+          type="link"
+          className="icon-btn w-full"
+          onClick={() => showEditModal(id)}
+        >
+          <FontAwesomeIcon icon={faPenToSquare} size="lg" />
+        </Button>
+        <Button
+          danger
+          onClick={() => delExpense(id)}
+          type="link"
+          className="icon-btn w-full"
+        >
+          <FontAwesomeIcon
+            icon={faTrashCan}
+            className="text-red-500"
+            size="lg"
+          />
+        </Button>
+      </div>
     );
   };
 
   return (
     <div>
       {sortedData && (
-        <div>
+        <div className="w-9/10">
           {Object.entries(sortedData).map(([date, expenses]) => (
             <List
               key={date}
@@ -292,7 +279,7 @@ const Expenses = () => {
                   ) : (
                     <List.Item
                       key={expense.id}
-                      className="flex justify-between items-center expense-list-item relative"
+                      className="group/item flex justify-between items-center expense-list-item relative"
                     >
                       <div className="flex gap-5 items-center">
                         <div className="text-gray-500 text-lg expense-icon">
@@ -309,7 +296,7 @@ const Expenses = () => {
                           </div>
                         </div>
                       </div>
-                      <div className="text-base">
+                      <div className="text-base flex items-center">
                         {expense.money > 0 ? (
                           <span className="text-purple-700 ">
                             + {expense.money} €
@@ -317,8 +304,8 @@ const Expenses = () => {
                         ) : (
                           <span>{expense.money} €</span>
                         )}
+                        {expenseEditButton(expense.id)}
                       </div>
-                      {expenseDropdown(expense.id)}
                     </List.Item>
                   )}
                 </>
