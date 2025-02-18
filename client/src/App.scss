@@ -212,3 +212,20 @@ body {
     background-color: #7432d1e3 !important;
     color: white !important;
   }
+
+  .expense-edit{
+   right: -70px;
+   display: flex;
+  }
+
+  .expense-list-container{
+    width: 90%;
+
+    .expense-list-item{
+      &:hover{
+        .expense-edit{
+          // display: flex;
+        }
+      }
+    }
+  }
