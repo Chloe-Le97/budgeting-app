@@ -23,6 +23,14 @@ const itemUser = [
     label: <Link to="/assets">Assets</Link>,
     key: '/assets',
   },
+  {
+    label: <Link to="/budget">Budget</Link>,
+    key: '/budget',
+  },
+  {
+    label: <Link to="/bill">Bill</Link>,
+    key: '/bill',
+  },
 ];
 
 const NavigationMenu = () => {
@@ -30,22 +38,6 @@ const NavigationMenu = () => {
   const location = useLocation();
 
   const menuDropdownItems = [
-    {
-      label: (
-        <Link to="/budget" className="dropdown-link">
-          Budget
-        </Link>
-      ),
-      key: 'budget',
-    },
-    {
-      label: (
-        <Link to="/bill" className="dropdown-link">
-          Bill
-        </Link>
-      ),
-      key: 'bill',
-    },
     {
       label: (
         <Link to="/category" className="dropdown-link">

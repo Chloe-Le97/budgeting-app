@@ -8,7 +8,8 @@ services:
     ports:
       - "3001:3001"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
     environment:
       # Use environment variables to configure database connection
       DATABASE_URL: postgres://postgres:example@db:5432/postgres
@@ -18,18 +19,27 @@ services:
       - ./backend/.env  # Load environment variables from .env file if it exists
     volumes:
       - ./backend:/usr/src/app  # Bind the backend folder to the container
+      - /usr/src/app/node_modules  # Preserve node_modules from container
+    command: npm run dev  # Use nodemon for auto-reload on code changes
     restart: always
 
   # PostgreSQL service
   db:
-    image: postgres
+    image: postgres:15  # Use PostgreSQL 15 for compatibility, or use postgres:latest with new volume path
     restart: always
     environment:
       POSTGRES_PASSWORD: example
+      POSTGRES_DB: postgres
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data  # For PostgreSQL 15 and below
+      # For PostgreSQL 18+, use: - pgdata:/var/lib/postgresql
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   client:
     container_name: client
@@ -43,7 +53,11 @@ services:
     environment:
       VITE_API_URL: http://localhost:3001
     env_file:
-      - ./client/.env  # Load environment variables from .env file if it exists 
+      - ./client/.env  # Load environment variables from .env file if it exists
+    volumes:
+      - ./client:/client  # Bind the client folder to the container
+      - /client/node_modules  # Preserve node_modules from container
+    command: sh -c "npm run dev-vite" 
 
 volumes:
   pgdata:
