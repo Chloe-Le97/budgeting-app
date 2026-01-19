@@ -1,5 +1,7 @@
 import axios from 'axios'
-const baseUrl = 'http://192.168.64.1:3001/'
+import config from '../config'
+
+const baseUrl = `${config.apiUrl}/`
 
 let token = null
 
@@ -7,7 +9,7 @@ const setToken = newToken => {
   token = `Bearer ${newToken}`
 }
 
-const getAll = async(url) => {
+const getAll = async (url) => {
   const config = {
     headers: { Authorization: token },
   }
@@ -31,37 +33,37 @@ const create = async (url, newObject) => {
   return response.data
 }
 
-const update =  async (url,id, newObject) => {
+const update = async (url, id, newObject) => {
   const config = {
     headers: { Authorization: token },
   }
 
   const requestUrl = baseUrl + url
 
-  const response = await axios.put(`${ requestUrl }/${id}`, newObject, config)
+  const response = await axios.put(`${requestUrl}/${id}`, newObject, config)
   return response.data
 }
 
-const updateUser = async (url, newObject) =>{
+const updateUser = async (url, newObject) => {
   const config = {
     headers: { Authorization: token },
   }
 
   const requestUrl = baseUrl + url
 
-  const response = await axios.put(`${ requestUrl }`, newObject, config)
+  const response = await axios.put(`${requestUrl}`, newObject, config)
   return response.data
 }
 
-const remove =  async (url, id) => {
+const remove = async (url, id) => {
   const config = {
     headers: { Authorization: token },
   }
 
   const requestUrl = baseUrl + url
 
-  const response = await axios.delete(`${ requestUrl }/${id}`, config)
+  const response = await axios.delete(`${requestUrl}/${id}`, config)
   return response.data
 }
 
-export default { getAll, create, update, updateUser ,setToken, remove }
+export default { getAll, create, update, updateUser, setToken, remove }

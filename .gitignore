@@ -1,5 +1,8 @@
 # Environment variables
 /backend/.env
+/client/.env
+/client/.env.local
+/client/.env.production
 
 # Dependencies
 /backend/node_modules
