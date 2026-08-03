@@ -103,6 +103,7 @@ body {
     column-gap: 20px;
     row-gap: 50px;
     .ant-radio-button-wrapper{
+      padding:40px;
       width: 100px;
       height: 50px;
       border-radius: 0 !important;
@@ -139,7 +140,7 @@ body {
     }
     .category-name{
       font-size: 14px;
-      
+      line-height: 20px;
     }
   }
 
